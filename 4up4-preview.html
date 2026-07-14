@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4↑4 パターン図形プレビュー</title>
+  <style>
+    :root {
+      --bg: #0f0f11;
+      --panel: #18181b;
+      --text: #e4e4e7;
+      --muted: #a1a1aa;
+      --accent: #22d3ee;
+      --grid-line: #27272a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      line-height: 1.5;
+    }
+    header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--grid-line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    h1 { margin: 0 0 8px; font-size: 1.25rem; }
+    .desc { color: var(--muted); font-size: 0.875rem; }
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+      background: var(--panel);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--grid-line);
+    }
+    .mode-switch button {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.15s;
+      white-space: nowrap;
+    }
+    .mode-switch button:hover { color: var(--text); }
+    .mode-switch button.active { background: var(--accent); color: #0f0f11; font-weight: 600; }
+    main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      padding: 24px 32px;
+    }
+    aside {
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 20px;
+      height: fit-content;
+      position: sticky;
+      top: 24px;
+    }
+    aside h2 { margin: 0 0 16px; font-size: 0.875rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .preview-box {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--bg);
+      border: 1px solid var(--grid-line);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .preview-box svg { width: 80%; height: 80%; }
+    .preview-box .symbol-grid {
+      width: 80%;
+      height: 80%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      font-size: 4rem;
+      color: var(--text);
+      text-align: center;
+      line-height: 1;
+      align-items: center;
+      justify-items: center;
+    }
+    .info-row { display: flex; justify-content: space-between; font-size: 0.875rem; margin: 6px 0; }
+    .info-row .label { color: var(--muted); }
+    .path-options {
+      display: none;
+      margin: 14px 0 6px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--grid-line);
+    }
+    .path-options.visible { display: block; }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .toggle input {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--muted);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+    }
+    .toggle input:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .toggle input:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 4px;
+      height: 9px;
+      border: solid #0f0f11;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .legend { margin-top: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; margin: 8px 0; }
+    .legend-item svg { width: 40px; height: 16px; }
+    .legend-symbol { font-size: 1.1rem; width: 24px; text-align: center; color: var(--text); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 6px;
+    }
+    .cell {
+      background: var(--panel);
+      border: 1px solid var(--grid-line);
+      border-radius: 6px;
+      padding: 6px 4px 4px;
+      cursor: pointer;
+      transition: transform 0.1s, border-color 0.1s;
+      min-width: 0;
+    }
+    .cell:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .cell.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .cell .idx { font-size: 0.65rem; color: var(--muted); text-align: center; margin-bottom: 2px; }
+    .cell svg { display: block; width: 100%; height: auto; }
+    .cell .symbol-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      font-size: 1rem;
+      line-height: 1;
+      text-align: center;
+      align-items: center;
+      justify-items: center;
+      aspect-ratio: 1;
+      color: var(--text);
+    }
+    .notation { font-size: 0.6rem; color: var(--muted); text-align: center; margin-top: 2px; font-family: inherit; }
+    @media (max-width: 1100px) {
+      main { grid-template-columns: 1fr; }
+      aside { position: static; }
+      .grid { grid-template-columns: repeat(12, 1fr); }
+    }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: repeat(8, 1fr); }
+      .mode-switch button { padding: 8px 10px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>4↑4 パターン図形プレビュー</h1>
+      <div class="desc">
+        4要素 × 2bit = 8bit = 256通り。辺スタイル、2×2記号、または4隅を結ぶパスで表現します。
+      </div>
+    </div>
+    <div class="mode-switch">
+      <button id="modeEdges" class="active">辺スタイル</button>
+      <button id="modeSymbols">2×2 記号</button>
+      <button id="modePath">4隅パス</button>
+      <button id="modeDotLine">丸点+線</button>
+    </div>
+  </header>
+  <main>
+    <aside>
+      <h2>選択中のパターン</h2>
+      <div class="preview-box" id="previewBox">
+        <svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#3f3f46" stroke-width="0.5"/></svg>
+      </div>
+      <div class="info-row"><span class="label">10進数</span><span id="infoDec">0</span></div>
+      <div class="info-row"><span class="label">2進数</span><span id="infoBin">00000000</span></div>
+      <div class="info-row"><span class="label">16進数</span><span id="infoHex">00</span></div>
+      <div class="info-row"><span class="label">記法</span><span id="infoNote">00-00-00-00</span></div>
+      <div class="info-row"><span class="label" id="infoLabel">辺の状態</span><span id="infoDetail">上00 右00 下00 左00</span></div>
+      <div class="path-options" id="pathOptions">
+        <label class="toggle">
+          <input type="checkbox" id="highlightDuplicates">
+          <span>同じ位置を強調（線を太く）</span>
+        </label>
+      </div>
+      <div class="legend" id="legend"></div>
+    </aside>
+    <section class="grid" id="grid"></section>
+  </main>
+
+  <script>
+    let currentMode = 'edges';
+    let selectedIndex = 0;
+    let highlightDuplicates = false;
+
+    // 座標: 00=左上, 01=右上, 10=左下, 11=右下
+    const CORNERS = {
+      0: [8, 8],
+      1: [32, 8],
+      2: [8, 32],
+      3: [32, 32],
+    };
+    const CORNER_NAMES = { 0: '左上', 1: '右上', 2: '左下', 3: '右下' };
+
+    const EDGE_STYLES = {
+      0: { width: 0, dash: '', wave: false, label: '-' },
+      1: { width: 2, dash: '', wave: false, label: '-' },
+      2: { width: 2, dash: '4 3', wave: false, label: '~' },
+      3: { width: 2, dash: '', wave: true, label: '=' },
+    };
+
+    const SYMBOL_MAP = {
+      0: { char: '0', name: '00' },
+      1: { char: '/', name: '01' },
+      2: { char: '\\', name: '10' },
+      3: { char: 'X', name: '11' },
+    };
+
+    function edgePath(x1, y1, x2, y2, style) {
+      if (style === 0) return '';
+      const attrs = `fill="none" stroke="currentColor" stroke-width="${EDGE_STYLES[style].width}"`;
+      if (EDGE_STYLES[style].dash) {
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${attrs} stroke-dasharray="${EDGE_STYLES[style].dash}"/>`;
+      }
+      if (EDGE_STYLES[style].wave) {
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        const dx = x2 - x1, dy = y2 - y1;
+        const len = Math.hypot(dx, dy);
+        const nx = -dy / len * 3;
+        const ny = dx / len * 3;
+        return `<path d="M${x1},${y1} Q${midX + nx},${midY + ny} ${x2},${y2}" ${attrs}/>`;
+      }
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${attrs}/>`;
+    }
+
+    function glyphSvg(top, right, bottom, left, size = 40) {
+      const pad = 8;
+      const inner = size - pad * 2;
+      const p1 = [pad, pad];
+      const p2 = [pad + inner, pad];
+      const p3 = [pad + inner, pad + inner];
+      const p4 = [pad, pad + inner];
+      const edges = [
+        edgePath(...p1, ...p2, top),
+        edgePath(...p2, ...p3, right),
+        edgePath(...p3, ...p4, bottom),
+        edgePath(...p4, ...p1, left),
+      ].filter(Boolean).join('');
+
+      return `<svg viewBox="0 0 ${size} ${size}" style="color:#e4e4e7">
+        ${edges}
+        <circle cx="${p1[0]}" cy="${p1[1]}" r="1.5" fill="#71717a"/>
+        <circle cx="${p2[0]}" cy="${p2[1]}" r="1.5" fill="#71717a"/>
+        <circle cx="${p3[0]}" cy="${p3[1]}" r="1.5" fill="#71717a"/>
+        <circle cx="${p4[0]}" cy="${p4[1]}" r="1.5" fill="#71717a"/>
+      </svg>`;
+    }
+
+    function cornerPoint(code, size) {
+      const pad = size * 0.2;
+      const far = size - pad;
+      switch (code) {
+        case 0: return [pad, pad];
+        case 1: return [far, pad];
+        case 2: return [pad, far];
+        case 3: return [far, far];
+      }
+    }
+
+    function pathSvg(a, b, c, d, size = 40, highlight = false) {
+      const sequence = [a, b, c, d];
+      const points = sequence.map(code => cornerPoint(code, size));
+      const colors = ['#22d3ee', '#f472b6', '#facc15']; // cyan, pink, yellow
+      const baseStrokeWidth = Math.max(1.5, size * 0.06);
+      const arrowLen = size * 0.1;
+      const baseDotRadius = Math.max(2, size * 0.04);
+      const fontSize = size * 0.15;
+      const segments = [];
+      const separators = [];
+
+      // Count visits per corner for duplicate highlighting
+      const visitCounts = [0, 0, 0, 0];
+      sequence.forEach(code => visitCounts[code]++);
+
+      // Count segment traversals for line thickening
+      const segmentCounts = {};
+      for (let i = 0; i < 3; i++) {
+        const key = [sequence[i], sequence[i + 1]].sort().join('-');
+        segmentCounts[key] = (segmentCounts[key] || 0) + 1;
+      }
+
+      for (let i = 0; i < 3; i++) {
+        const [x1, y1] = points[i];
+        const [x2, y2] = points[i + 1];
+        const color = colors[i];
+
+        if (x1 === x2 && y1 === y2) {
+          separators.push('=');
+          if (highlight) {
+            const loopRadius = baseDotRadius * 2;
+            const thickness = baseStrokeWidth * visitCounts[sequence[i]];
+            segments.push(`<circle cx="${x1}" cy="${y1}" r="${loopRadius}" fill="none" stroke="${color}" stroke-width="${thickness}"/>`);
+          }
+          continue;
+        }
+
+        const isAxisAligned = x1 === x2 || y1 === y2;
+        separators.push(isAxisAligned ? '-' : '~');
+
+        const key = [sequence[i], sequence[i + 1]].sort().join('-');
+        const segCount = segmentCounts[key] || 1;
+        const strokeWidth = highlight ? baseStrokeWidth * (1 + (segCount - 1) * 0.8) : baseStrokeWidth;
+
+        const dash = i === 1 ? `${size * 0.1} ${size * 0.075}` : '';
+        const lineAttrs = `stroke="${color}" stroke-width="${strokeWidth}" ${dash ? `stroke-dasharray="${dash}"` : ''}`;
+        segments.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" fill="none" ${lineAttrs}/>`);
+
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const arrowAngle = Math.PI / 6;
+        const ax1 = x2 - arrowLen * Math.cos(angle - arrowAngle);
+        const ay1 = y2 - arrowLen * Math.sin(angle - arrowAngle);
+        const ax2 = x2 - arrowLen * Math.cos(angle + arrowAngle);
+        const ay2 = y2 - arrowLen * Math.sin(angle + arrowAngle);
+        segments.push(`<polygon points="${x2},${y2} ${ax1},${ay1} ${ax2},${ay2}" fill="${color}"/>`);
+      }
+
+      const pointMarkers = points.map(([x, y], idx) => {
+        const code = sequence[idx];
+        const count = visitCounts[code];
+        const radius = highlight ? baseDotRadius * (1 + (count - 1) * 0.6) : baseDotRadius;
+        const strokeWidth = highlight ? baseStrokeWidth * (1 + (count - 1) * 0.5) : baseStrokeWidth * 0.4;
+        return `
+          <circle cx="${x}" cy="${y}" r="${radius}" fill="#18181b" stroke="#e4e4e7" stroke-width="${strokeWidth}"/>
+          <text x="${x}" y="${y + fontSize * 0.05}" text-anchor="middle" dominant-baseline="middle" fill="#e4e4e7" font-size="${fontSize}" font-family="ui-monospace, monospace">${idx + 1}</text>
+        `;
+      }).join('');
+
+      return {
+        svg: `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet">${segments.join('')}${pointMarkers}</svg>`,
+        separators,
+      };
+    }
+
+    function symbolGridHtml(a, b, c, d) {
+      const cells = [a, b, c, d].map(v => `<div>${SYMBOL_MAP[v].char}</div>`).join('');
+      return `<div class="symbol-grid">${cells}</div>`;
+    }
+
+    function dotLineSvg(index, size = 40) {
+      // 上位4bit: 4隅の丸点有無（bit7=左上, bit6=右上, bit5=左下, bit4=右下）
+      // 下位4bit: 線分（bit3-2=始点, bit1-0=終点）
+      const dotBits = (index >> 4) & 0x0F;
+      const lineStart = (index >> 2) & 3;
+      const lineEnd = index & 3;
+      const pad = size * 0.2;
+      const far = size - pad;
+      const cornerCoords = [
+        [pad, pad],
+        [far, pad],
+        [pad, far],
+        [far, far],
+      ];
+
+      const dotRadius = Math.max(2.5, size * 0.055);
+      const lineWidth = Math.max(1.5, size * 0.05);
+
+      const dots = cornerCoords.map(([x, y], idx) => {
+        const hasDot = (dotBits >> (3 - idx)) & 1;
+        if (!hasDot) return '';
+        return `<circle cx="${x}" cy="${y}" r="${dotRadius}" fill="#e4e4e7"/>`;
+      }).join('');
+
+      const [sx, sy] = cornerCoords[lineStart];
+      const [ex, ey] = cornerCoords[lineEnd];
+      let line = '';
+      if (lineStart === lineEnd) {
+        // 始点=終点の場合は二重円（点を強調）
+        line = `<circle cx="${sx}" cy="${sy}" r="${dotRadius * 1.6}" fill="none" stroke="#22d3ee" stroke-width="${lineWidth}"/>`;
+      } else {
+        line = `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="#22d3ee" stroke-width="${lineWidth}" stroke-linecap="round"/>`;
+      }
+
+      return `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet" style="color:#e4e4e7">${dots}${line}</svg>`;
+    }
+
+    function dotLineNotation(index) {
+      const dotBits = (index >> 4) & 0x0F;
+      const lineStart = (index >> 2) & 3;
+      const lineEnd = index & 3;
+      const dots = dotBits.toString(2).padStart(4, '0');
+      return `${dots} ${lineStart.toString(2).padStart(2, '0')}-${lineEnd.toString(2).padStart(2, '0')}`;
+    }
+
+    function stateFromIndex(index) {
+      const a = (index >> 6) & 3;
+      const b = (index >> 4) & 3;
+      const c = (index >> 2) & 3;
+      const d = index & 3;
+      return { a, b, c, d };
+    }
+
+    function edgeNotation({ a, b, c, d }) {
+      const fmt = v => v.toString(2).padStart(2, '0');
+      const sep = [EDGE_STYLES[a].label, EDGE_STYLES[b].label, EDGE_STYLES[c].label];
+      return `${fmt(a)}${sep[0]}${fmt(b)}${sep[1]}${fmt(c)}${sep[2]}${fmt(d)}`;
+    }
+
+    function symbolNotation({ a, b, c, d }) {
+      return [a, b, c, d].map(v => SYMBOL_MAP[v].char).join('');
+    }
+
+    function pathNotation({ a, b, c, d }, separators) {
+      const fmt = v => v.toString(2).padStart(2, '0');
+      return `${fmt(a)}${separators[0]}${fmt(b)}${separators[1]}${fmt(c)}${separators[2]}${fmt(d)}`;
+    }
+
+    function renderLegend() {
+      const legend = document.getElementById('legend');
+      if (currentMode === 'edges') {
+        legend.innerHTML = `
+          <h2>線スタイル凡例</h2>
+          <div class="legend-item"><svg viewBox="0 0 40 16"><line x1="2" y1="8" x2="38" y2="8" stroke="#71717a" stroke-width="2"/></svg><span>00 — 無し（非表示）</span></div>
+          <div class="legend-item"><svg viewBox="0 0 40 16"><line x1="2" y1="8" x2="38" y2="8" stroke="#e4e4e7" stroke-width="2"/></svg><span>01 — 実線</span></div>
+          <div class="legend-item"><svg viewBox="0 0 40 16"><line x1="2" y1="8" x2="38" y2="8" stroke="#e4e4e7" stroke-width="2" stroke-dasharray="4 3"/></svg><span>10 — 破線</span></div>
+          <div class="legend-item"><svg viewBox="0 0 40 16"><path d="M2,8 Q10,2 18,8 T34,8" fill="none" stroke="#e4e4e7" stroke-width="2"/></svg><span>11 — 波線</span></div>
+        `;
+      } else if (currentMode === 'symbols') {
+        legend.innerHTML = `
+          <h2>記号凡例</h2>
+          <div class="legend-item"><span class="legend-symbol">0</span><span>00</span></div>
+          <div class="legend-item"><span class="legend-symbol">/</span><span>01</span></div>
+          <div class="legend-item"><span class="legend-symbol">\\</span><span>10</span></div>
+          <div class="legend-item"><span class="legend-symbol">X</span><span>11</span></div>
+        `;
+      } else if (currentMode === 'path') {
+        legend.innerHTML = `
+          <h2>パス凡例</h2>
+          <div class="legend-item"><span style="display:inline-block;width:24px;height:3px;background:#22d3ee;border-radius:2px"></span><span>1本目の線分</span></div>
+          <div class="legend-item"><span style="display:inline-block;width:24px;height:3px;background:#f472b6;border-radius:2px"></span><span>2本目の線分（破線）</span></div>
+          <div class="legend-item"><span style="display:inline-block;width:24px;height:3px;background:#facc15;border-radius:2px"></span><span>3本目の線分</span></div>
+          <div class="legend-item"><span class="legend-symbol">-</span><span>水平／垂直</span></div>
+          <div class="legend-item"><span class="legend-symbol">~</span><span>斜め</span></div>
+          <div class="legend-item"><span class="legend-symbol">=</span><span>同一点（線なし）</span></div>
+          <div class="legend-item" style="margin-top:12px;color:var(--muted)">番号付き丸が通過順。矢印が進行方向です。</div>
+          <div class="legend-item" style="margin-top:8px;color:var(--muted)">「同じ位置を強調」ON で、繰り返し通過した角や線が太くなります。</div>
+        `;
+      } else {
+        legend.innerHTML = `
+          <h2>丸点+線 凡例</h2>
+          <div class="legend-item"><span style="display:inline-block;width:10px;height:10px;background:#e4e4e7;border-radius:50%"></span><span>上位4bitで四隅の丸点ON/OFF</span></div>
+          <div class="legend-item"><span style="display:inline-block;width:24px;height:3px;background:#22d3ee;border-radius:2px"></span><span>下位4bitで2bit→2bitの線</span></div>
+          <div class="legend-item"><span style="display:inline-block;width:14px;height:14px;border:2px solid #22d3ee;border-radius:50%"></span><span>始点=終点の場合は二重円</span></div>
+        `;
+      }
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < 256; i++) {
+        const state = stateFromIndex(i);
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.id = `cell-${i}`;
+
+        let graphic;
+        let note;
+        if (currentMode === 'edges') {
+          graphic = glyphSvg(state.a, state.b, state.c, state.d, 40);
+          note = edgeNotation(state);
+        } else if (currentMode === 'symbols') {
+          graphic = symbolGridHtml(state.a, state.b, state.c, state.d);
+          note = symbolNotation(state);
+        } else if (currentMode === 'path') {
+          const { svg, separators } = pathSvg(state.a, state.b, state.c, state.d, 40, highlightDuplicates);
+          graphic = svg;
+          note = pathNotation(state, separators);
+        } else {
+          graphic = dotLineSvg(i, 40);
+          note = dotLineNotation(i);
+        }
+
+        cell.innerHTML = `
+          <div class="idx">${i}</div>
+          ${graphic}
+          <div class="notation">${note}</div>
+        `;
+        cell.addEventListener('click', () => { selectedIndex = i; updateInfo(); });
+        grid.appendChild(cell);
+      }
+    }
+
+    function updateInfo() {
+      const state = stateFromIndex(selectedIndex);
+      const previewBox = document.getElementById('previewBox');
+      const infoNote = document.getElementById('infoNote');
+      const infoLabel = document.getElementById('infoLabel');
+      const infoDetail = document.getElementById('infoDetail');
+
+      if (currentMode === 'edges') {
+        previewBox.innerHTML = glyphSvg(state.a, state.b, state.c, state.d, 160);
+        infoNote.textContent = edgeNotation(state);
+        infoLabel.textContent = '辺の状態';
+        infoDetail.textContent = `上${state.a} 右${state.b} 下${state.c} 左${state.d}`;
+      } else if (currentMode === 'symbols') {
+        previewBox.innerHTML = symbolGridHtml(state.a, state.b, state.c, state.d);
+        infoNote.textContent = symbolNotation(state);
+        infoLabel.textContent = 'セル配置';
+        infoDetail.textContent = `左上${state.a} 右上${state.b} 左下${state.c} 右下${state.d}`;
+      } else if (currentMode === 'path') {
+        const { svg, separators } = pathSvg(state.a, state.b, state.c, state.d, 160, highlightDuplicates);
+        previewBox.innerHTML = svg;
+        infoNote.textContent = pathNotation(state, separators);
+        infoLabel.textContent = '通過座標';
+        infoDetail.textContent = [state.a, state.b, state.c, state.d].map(v => CORNER_NAMES[v]).join(' → ');
+      } else {
+        previewBox.innerHTML = dotLineSvg(selectedIndex, 160);
+        infoNote.textContent = dotLineNotation(selectedIndex);
+        infoLabel.textContent = '構成';
+        const dotBits = (selectedIndex >> 4) & 0x0F;
+        const lineStart = (selectedIndex >> 2) & 3;
+        const lineEnd = selectedIndex & 3;
+        const dotNames = ['左上', '右上', '左下', '右下'].filter((_, idx) => (dotBits >> (3 - idx)) & 1).join(' ') || 'なし';
+        infoDetail.textContent = `点:${dotNames} / 線:${CORNER_NAMES[lineStart]}→${CORNER_NAMES[lineEnd]}`;
+      }
+
+      document.getElementById('infoDec').textContent = selectedIndex;
+      document.getElementById('infoBin').textContent = selectedIndex.toString(2).padStart(8, '0');
+      document.getElementById('infoHex').textContent = selectedIndex.toString(16).toUpperCase().padStart(2, '0');
+
+      document.querySelectorAll('.cell.active').forEach(c => c.classList.remove('active'));
+      const active = document.getElementById(`cell-${selectedIndex}`);
+      if (active) active.classList.add('active');
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('modeEdges').classList.toggle('active', mode === 'edges');
+      document.getElementById('modeSymbols').classList.toggle('active', mode === 'symbols');
+      document.getElementById('modePath').classList.toggle('active', mode === 'path');
+      document.getElementById('modeDotLine').classList.toggle('active', mode === 'dotLine');
+      document.getElementById('pathOptions').classList.toggle('visible', mode === 'path');
+      renderLegend();
+      renderGrid();
+      updateInfo();
+    }
+
+    document.getElementById('modeEdges').addEventListener('click', () => setMode('edges'));
+    document.getElementById('modeSymbols').addEventListener('click', () => setMode('symbols'));
+    document.getElementById('modePath').addEventListener('click', () => setMode('path'));
+    document.getElementById('modeDotLine').addEventListener('click', () => setMode('dotLine'));
+    document.getElementById('highlightDuplicates').addEventListener('change', (e) => {
+      highlightDuplicates = e.target.checked;
+      renderGrid();
+      updateInfo();
+    });
+
+    setMode('edges');
+  </script>
+</body>
+</html>
