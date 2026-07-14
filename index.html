@@ -185,12 +185,13 @@
     <div>
       <h1>4↑4 パターン図形プレビュー</h1>
       <div class="desc">
-        4要素 × 2bit = 8bit = 256通り。辺スタイル、2×2記号、または4隅を結ぶパスで表現します。
+        4要素 × 2bit = 8bit = 256通り。辺スタイル、2×2記号、三角分割、4隅パス、丸点+線で表現します。
       </div>
     </div>
     <div class="mode-switch">
       <button id="modeEdges" class="active">辺スタイル</button>
       <button id="modeSymbols">2×2 記号</button>
+      <button id="modeTriSplit">三角分割</button>
       <button id="modePath">4隅パス</button>
       <button id="modeDotLine">丸点+線</button>
     </div>
@@ -507,6 +508,55 @@
       return `${dots} ${lineStart.toString(2).padStart(2, '0')}-${lineEnd.toString(2).padStart(2, '0')}`;
     }
 
+    function triSplitSvg(index, size = 40) {
+      // 4象限 × 2三角形 = 8bit
+      // 各象限を対角線で2分割。左下側の三角形が上位bit、右上側が下位bit。
+      const pad = size * 0.08;
+      const mid = size / 2;
+      const far = size - pad;
+
+      // 各象限の座標: [左上x, 左上y, 右下x, 右下y]
+      const quadrants = [
+        [pad, pad, mid, mid],       // 左上
+        [mid, pad, far, mid],       // 右上
+        [pad, mid, mid, far],       // 左下
+        [mid, mid, far, far],       // 右下
+      ];
+
+      const triangles = [];
+      quadrants.forEach(([qx1, qy1, qx2, qy2], qIdx) => {
+        const highBit = 7 - qIdx * 2;
+        const lowBit = 6 - qIdx * 2;
+        const leftFilled = (index >> highBit) & 1;
+        const rightFilled = (index >> lowBit) & 1;
+
+        // 左下側の三角形: 左上、左下、右下
+        if (leftFilled) {
+          triangles.push(`<polygon points="${qx1},${qy1} ${qx1},${qy2} ${qx2},${qy2}" fill="#e4e4e7"/>`);
+        }
+        // 右上側の三角形: 左上、右下、右上
+        if (rightFilled) {
+          triangles.push(`<polygon points="${qx1},${qy1} ${qx2},${qy2} ${qx2},${qy1}" fill="#a1a1aa"/>`);
+        }
+
+        // 象限の枠線
+        triangles.push(`<rect x="${qx1}" y="${qy1}" width="${qx2 - qx1}" height="${qy2 - qy1}" fill="none" stroke="#3f3f46" stroke-width="0.5"/>`);
+        triangles.push(`<line x1="${qx1}" y1="${qy1}" x2="${qx2}" y2="${qy2}" stroke="#3f3f46" stroke-width="0.5"/>`);
+      });
+
+      return `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet">${triangles.join('')}</svg>`;
+    }
+
+    function triSplitNotation(index) {
+      const qs = [];
+      for (let q = 0; q < 4; q++) {
+        const highBit = 7 - q * 2;
+        const lowBit = 6 - q * 2;
+        qs.push(`${(index >> highBit) & 1}${(index >> lowBit) & 1}`);
+      }
+      return qs.join('-');
+    }
+
     function stateFromIndex(index) {
       const a = (index >> 6) & 3;
       const b = (index >> 4) & 3;
@@ -565,12 +615,19 @@
           <div class="legend-item" style="margin-top:12px;color:var(--muted)">番号付き丸が通過順。矢印が進行方向です。</div>
           <div class="legend-item" style="margin-top:8px;color:var(--muted)">「同じ位置を強調」ON で、繰り返し通過した角や線が太くなります。</div>
         `;
-      } else {
+      } else if (currentMode === 'dotLine') {
         legend.innerHTML = `
           <h2>丸点+線 凡例</h2>
           <div class="legend-item"><span style="display:inline-block;width:10px;height:10px;background:#e4e4e7;border-radius:50%"></span><span>上位4bitで四隅の丸点ON/OFF</span></div>
           <div class="legend-item"><span style="display:inline-block;width:24px;height:3px;background:#22d3ee;border-radius:2px"></span><span>下位4bitで2bit→2bitの線</span></div>
           <div class="legend-item"><span style="display:inline-block;width:14px;height:14px;border:2px solid #22d3ee;border-radius:50%"></span><span>始点=終点の場合は二重円</span></div>
+        `;
+      } else {
+        legend.innerHTML = `
+          <h2>三角分割 凡例</h2>
+          <div class="legend-item"><span style="display:inline-block;width:14px;height:14px;background:#e4e4e7;clip-path:polygon(0 0,0 100%,100% 100%)"></span><span>左下側三角形（各象限の上位bit）</span></div>
+          <div class="legend-item"><span style="display:inline-block;width:14px;height:14px;background:#a1a1aa;clip-path:polygon(0 0,100% 0,100% 100%)"></span><span>右上側三角形（各象限の下位bit）</span></div>
+          <div class="legend-item" style="margin-top:8px;color:var(--muted)">4象限 × 2三角形 = 8bit = 256通り</div>
         `;
       }
     }
@@ -596,9 +653,12 @@
           const { svg, separators } = pathSvg(state.a, state.b, state.c, state.d, 40, highlightDuplicates);
           graphic = svg;
           note = pathNotation(state, separators);
-        } else {
+        } else if (currentMode === 'dotLine') {
           graphic = dotLineSvg(i, 40);
           note = dotLineNotation(i);
+        } else {
+          graphic = triSplitSvg(i, 40);
+          note = triSplitNotation(i);
         }
 
         cell.innerHTML = `
@@ -634,7 +694,7 @@
         infoNote.textContent = pathNotation(state, separators);
         infoLabel.textContent = '通過座標';
         infoDetail.textContent = [state.a, state.b, state.c, state.d].map(v => CORNER_NAMES[v]).join(' → ');
-      } else {
+      } else if (currentMode === 'dotLine') {
         previewBox.innerHTML = dotLineSvg(selectedIndex, 160);
         infoNote.textContent = dotLineNotation(selectedIndex);
         infoLabel.textContent = '構成';
@@ -643,6 +703,18 @@
         const lineEnd = selectedIndex & 3;
         const dotNames = ['左上', '右上', '左下', '右下'].filter((_, idx) => (dotBits >> (3 - idx)) & 1).join(' ') || 'なし';
         infoDetail.textContent = `点:${dotNames} / 線:${CORNER_NAMES[lineStart]}→${CORNER_NAMES[lineEnd]}`;
+      } else {
+        previewBox.innerHTML = triSplitSvg(selectedIndex, 160);
+        infoNote.textContent = triSplitNotation(selectedIndex);
+        infoLabel.textContent = '象限の塗り状態';
+        const qs = [];
+        const qNames = ['左上', '右上', '左下', '右下'];
+        for (let q = 0; q < 4; q++) {
+          const highBit = 7 - q * 2;
+          const lowBit = 6 - q * 2;
+          qs.push(`${qNames[q]}:${(selectedIndex >> highBit) & 1}${(selectedIndex >> lowBit) & 1}`);
+        }
+        infoDetail.textContent = qs.join(' ');
       }
 
       document.getElementById('infoDec').textContent = selectedIndex;
@@ -658,6 +730,7 @@
       currentMode = mode;
       document.getElementById('modeEdges').classList.toggle('active', mode === 'edges');
       document.getElementById('modeSymbols').classList.toggle('active', mode === 'symbols');
+      document.getElementById('modeTriSplit').classList.toggle('active', mode === 'triSplit');
       document.getElementById('modePath').classList.toggle('active', mode === 'path');
       document.getElementById('modeDotLine').classList.toggle('active', mode === 'dotLine');
       document.getElementById('pathOptions').classList.toggle('visible', mode === 'path');
@@ -671,6 +744,7 @@
     document.getElementById('modeSymbols').addEventListener('click', () => setMode('symbols'));
     document.getElementById('modePath').addEventListener('click', () => setMode('path'));
     document.getElementById('modeDotLine').addEventListener('click', () => setMode('dotLine'));
+    document.getElementById('modeTriSplit').addEventListener('click', () => setMode('triSplit'));
     document.getElementById('symbolSetSelect').addEventListener('change', (e) => {
       currentSymbolSet = parseInt(e.target.value, 10);
       renderLegend();
