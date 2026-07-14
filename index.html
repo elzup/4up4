@@ -126,6 +126,26 @@
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
+    .select-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #symbolSetSelect {
+      width: 100%;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--grid-line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    #symbolSetSelect:focus { outline: none; border-color: var(--accent); }
     .legend { margin-top: 20px; }
     .legend-item { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; margin: 8px 0; }
     .legend-item svg { width: 40px; height: 16px; }
@@ -192,6 +212,17 @@
           <span>同じ位置を強調（線を太く）</span>
         </label>
       </div>
+      <div class="path-options" id="symbolOptions">
+        <label class="select-label" for="symbolSetSelect">記号セット</label>
+        <select id="symbolSetSelect">
+          <option value="0">0 / \ X</option>
+          <option value="1">○ △ □ +</option>
+          <option value="2">点の大きさ</option>
+          <option value="3">— | +</option>
+          <option value="4">矢印</option>
+          <option value="5">カーブ</option>
+        </select>
+      </div>
       <div class="legend" id="legend"></div>
     </aside>
     <section class="grid" id="grid"></section>
@@ -218,12 +249,79 @@
       3: { width: 2, dash: '', wave: true, label: '=' },
     };
 
-    const SYMBOL_MAP = {
-      0: { char: '0', name: '00' },
-      1: { char: '/', name: '01' },
-      2: { char: '\\', name: '10' },
-      3: { char: 'X', name: '11' },
-    };
+    const SYMBOL_SETS = [
+      {
+        name: '0 / \\ X',
+        render: (v, x, y, s, w) => {
+          const cx = x + s / 2, cy = y + s / 2, r = s * 0.22, m = s * 0.18;
+          const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`;
+          if (v === 0) return `<circle cx="${cx}" cy="${cy}" r="${r}" ${attrs}/>`;
+          if (v === 1) return `<line x1="${x + m}" y1="${y + s - m}" x2="${x + s - m}" y2="${y + m}" ${attrs}/>`;
+          if (v === 2) return `<line x1="${x + m}" y1="${y + m}" x2="${x + s - m}" y2="${y + s - m}" ${attrs}/>`;
+          return `<line x1="${x + m}" y1="${y + s - m}" x2="${x + s - m}" y2="${y + m}" ${attrs}/><line x1="${x + m}" y1="${y + m}" x2="${x + s - m}" y2="${y + s - m}" ${attrs}/>`;
+        }
+      },
+      {
+        name: '○ △ □ +',
+        render: (v, x, y, s, w) => {
+          const cx = x + s / 2, cy = y + s / 2, r = s * 0.22, m = s * 0.18;
+          const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`;
+          if (v === 0) return `<circle cx="${cx}" cy="${cy}" r="${r}" ${attrs}/>`;
+          if (v === 1) return `<polygon points="${cx},${y + m} ${x + s - m},${y + s - m} ${x + m},${y + s - m}" ${attrs}/>`;
+          if (v === 2) return `<rect x="${x + m}" y="${y + m}" width="${s - m * 2}" height="${s - m * 2}" ${attrs}/>`;
+          return `<line x1="${cx}" y1="${y + m}" x2="${cx}" y2="${y + s - m}" ${attrs}/><line x1="${x + m}" y1="${cy}" x2="${x + s - m}" y2="${cy}" ${attrs}/>`;
+        }
+      },
+      {
+        name: '点の大きさ',
+        render: (v, x, y, s, w) => {
+          const cx = x + s / 2, cy = y + s / 2;
+          const radii = [0, s * 0.08, s * 0.16, s * 0.24];
+          const r = radii[v];
+          if (r === 0) return '';
+          return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#e4e4e7"/>`;
+        }
+      },
+      {
+        name: '— | +',
+        render: (v, x, y, s, w) => {
+          const cx = x + s / 2, cy = y + s / 2, m = s * 0.18;
+          const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`;
+          if (v === 0) return '';
+          if (v === 1) return `<line x1="${x + m}" y1="${cy}" x2="${x + s - m}" y2="${cy}" ${attrs}/>`;
+          if (v === 2) return `<line x1="${cx}" y1="${y + m}" x2="${cx}" y2="${y + s - m}" ${attrs}/>`;
+          return `<line x1="${x + m}" y1="${cy}" x2="${x + s - m}" y2="${cy}" ${attrs}/><line x1="${cx}" y1="${y + m}" x2="${cx}" y2="${y + s - m}" ${attrs}/>`;
+        }
+      },
+      {
+        name: '矢印',
+        render: (v, x, y, s, w) => {
+          const cx = x + s / 2, cy = y + s / 2, m = s * 0.22, head = s * 0.12;
+          const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`;
+          const arrowHead = (tx, ty, angle) => {
+            const a1 = angle + Math.PI / 6, a2 = angle - Math.PI / 6;
+            return `<polygon points="${tx},${ty} ${tx - head * Math.cos(a1)},${ty - head * Math.sin(a1)} ${tx - head * Math.cos(a2)},${ty - head * Math.sin(a2)}" fill="#e4e4e7"/>`;
+          };
+          if (v === 0) return '';
+          if (v === 1) return `<line x1="${x + m}" y1="${cy}" x2="${x + s - m}" y2="${cy}" ${attrs}/>${arrowHead(x + s - m, cy, 0)}`;
+          if (v === 2) return `<line x1="${cx}" y1="${y + m}" x2="${cx}" y2="${y + s - m}" ${attrs}/>${arrowHead(cx, y + s - m, Math.PI / 2)}`;
+          return `<line x1="${x + m}" y1="${y + m}" x2="${x + s - m}" y2="${y + s - m}" ${attrs}/>${arrowHead(x + s - m, y + s - m, Math.PI / 4)}`;
+        }
+      },
+      {
+        name: 'カーブ',
+        render: (v, x, y, s, w) => {
+          const m = s * 0.18;
+          const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`;
+          if (v === 0) return '';
+          if (v === 1) return `<path d="M${x + m},${y + s - m} Q${x + s / 2},${y + m} ${x + s - m},${y + s - m}" ${attrs}/>`;
+          if (v === 2) return `<path d="M${x + m},${y + m} Q${x + s - m},${y + m * 2} ${x + m},${y + s - m}" ${attrs}/>`;
+          return `<path d="M${x + m},${y + s / 2} C${x + m},${y + m} ${x + s - m},${y + m} ${x + s - m},${y + s / 2} S${x + m},${y + s - m} ${x + m},${y + s / 2}" ${attrs}/>`;
+        }
+      },
+    ];
+
+    let currentSymbolSet = 0;
 
     function edgePath(x1, y1, x2, y2, style) {
       if (style === 0) return '';
@@ -351,35 +449,15 @@
       };
     }
 
-    function symbolPath(v, cx, cy, cellSize, strokeWidth) {
-      const x = cx + cellSize / 2;
-      const y = cy + cellSize / 2;
-      const r = cellSize * 0.22;
-      const margin = cellSize * 0.18;
-      const attrs = `stroke="#e4e4e7" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"`;
-      switch (v) {
-        case 0:
-          return `<circle cx="${x}" cy="${y}" r="${r}" ${attrs}/>`;
-        case 1: // /
-          return `<line x1="${cx + margin}" y1="${cy + cellSize - margin}" x2="${cx + cellSize - margin}" y2="${cy + margin}" ${attrs}/>`;
-        case 2: // \
-          return `<line x1="${cx + margin}" y1="${cy + margin}" x2="${cx + cellSize - margin}" y2="${cy + cellSize - margin}" ${attrs}/>`;
-        case 3: // X
-          return `
-            <line x1="${cx + margin}" y1="${cy + cellSize - margin}" x2="${cx + cellSize - margin}" y2="${cy + margin}" ${attrs}/>
-            <line x1="${cx + margin}" y1="${cy + margin}" x2="${cx + cellSize - margin}" y2="${cy + cellSize - margin}" ${attrs}/>
-          `;
-      }
-    }
-
     function symbolGridHtml(a, b, c, d, size = 40) {
       const cellSize = size / 2;
       const strokeWidth = Math.max(1.5, size * 0.045);
+      const render = SYMBOL_SETS[currentSymbolSet].render;
       const cells = [
-        symbolPath(a, 0, 0, cellSize, strokeWidth),
-        symbolPath(b, cellSize, 0, cellSize, strokeWidth),
-        symbolPath(c, 0, cellSize, cellSize, strokeWidth),
-        symbolPath(d, cellSize, cellSize, cellSize, strokeWidth),
+        render(a, 0, 0, cellSize, strokeWidth),
+        render(b, cellSize, 0, cellSize, strokeWidth),
+        render(c, 0, cellSize, cellSize, strokeWidth),
+        render(d, cellSize, cellSize, cellSize, strokeWidth),
       ].join('');
       return `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet" style="color:#e4e4e7">${cells}</svg>`;
     }
@@ -444,7 +522,7 @@
     }
 
     function symbolNotation({ a, b, c, d }) {
-      return [a, b, c, d].map(v => SYMBOL_MAP[v].char).join('');
+      return [a, b, c, d].map(v => v.toString(2).padStart(2, '0')).join(' ');
     }
 
     function pathNotation({ a, b, c, d }, separators) {
@@ -463,12 +541,17 @@
           <div class="legend-item"><svg viewBox="0 0 40 16"><path d="M2,8 Q10,2 18,8 T34,8" fill="none" stroke="#e4e4e7" stroke-width="2"/></svg><span>11 — 波線</span></div>
         `;
       } else if (currentMode === 'symbols') {
+        const set = SYMBOL_SETS[currentSymbolSet];
+        const render = set.render;
+        const previewSize = 18;
+        const strokeWidth = 2;
+        const makePreview = (v) => `<svg viewBox="0 0 ${previewSize} ${previewSize}" width="18" height="18">${render(v, 0, 0, previewSize, strokeWidth)}</svg>`;
         legend.innerHTML = `
-          <h2>記号凡例</h2>
-          <div class="legend-item"><span class="legend-symbol">0</span><span>00</span></div>
-          <div class="legend-item"><span class="legend-symbol">/</span><span>01</span></div>
-          <div class="legend-item"><span class="legend-symbol">\\</span><span>10</span></div>
-          <div class="legend-item"><span class="legend-symbol">X</span><span>11</span></div>
+          <h2>記号凡例 — ${set.name}</h2>
+          <div class="legend-item">${makePreview(0)}<span>00</span></div>
+          <div class="legend-item">${makePreview(1)}<span>01</span></div>
+          <div class="legend-item">${makePreview(2)}<span>10</span></div>
+          <div class="legend-item">${makePreview(3)}<span>11</span></div>
         `;
       } else if (currentMode === 'path') {
         legend.innerHTML = `
@@ -578,6 +661,7 @@
       document.getElementById('modePath').classList.toggle('active', mode === 'path');
       document.getElementById('modeDotLine').classList.toggle('active', mode === 'dotLine');
       document.getElementById('pathOptions').classList.toggle('visible', mode === 'path');
+      document.getElementById('symbolOptions').classList.toggle('visible', mode === 'symbols');
       renderLegend();
       renderGrid();
       updateInfo();
@@ -587,6 +671,12 @@
     document.getElementById('modeSymbols').addEventListener('click', () => setMode('symbols'));
     document.getElementById('modePath').addEventListener('click', () => setMode('path'));
     document.getElementById('modeDotLine').addEventListener('click', () => setMode('dotLine'));
+    document.getElementById('symbolSetSelect').addEventListener('change', (e) => {
+      currentSymbolSet = parseInt(e.target.value, 10);
+      renderLegend();
+      renderGrid();
+      updateInfo();
+    });
     document.getElementById('highlightDuplicates').addEventListener('change', (e) => {
       highlightDuplicates = e.target.checked;
       renderGrid();
