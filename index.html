@@ -82,19 +82,6 @@
       overflow: hidden;
     }
     .preview-box svg { width: 80%; height: 80%; }
-    .preview-box .symbol-grid {
-      width: 80%;
-      height: 80%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      font-size: 4rem;
-      color: var(--text);
-      text-align: center;
-      line-height: 1;
-      align-items: center;
-      justify-items: center;
-    }
     .info-row { display: flex; justify-content: space-between; font-size: 0.875rem; margin: 6px 0; }
     .info-row .label { color: var(--muted); }
     .path-options {
@@ -161,18 +148,6 @@
     .cell.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
     .cell .idx { font-size: 0.65rem; color: var(--muted); text-align: center; margin-bottom: 2px; }
     .cell svg { display: block; width: 100%; height: auto; }
-    .cell .symbol-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      font-size: 1rem;
-      line-height: 1;
-      text-align: center;
-      align-items: center;
-      justify-items: center;
-      aspect-ratio: 1;
-      color: var(--text);
-    }
     .notation { font-size: 0.6rem; color: var(--muted); text-align: center; margin-top: 2px; font-family: inherit; }
     @media (max-width: 1100px) {
       main { grid-template-columns: 1fr; }
@@ -376,9 +351,37 @@
       };
     }
 
-    function symbolGridHtml(a, b, c, d) {
-      const cells = [a, b, c, d].map(v => `<div>${SYMBOL_MAP[v].char}</div>`).join('');
-      return `<div class="symbol-grid">${cells}</div>`;
+    function symbolPath(v, cx, cy, cellSize, strokeWidth) {
+      const x = cx + cellSize / 2;
+      const y = cy + cellSize / 2;
+      const r = cellSize * 0.22;
+      const margin = cellSize * 0.18;
+      const attrs = `stroke="#e4e4e7" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"`;
+      switch (v) {
+        case 0:
+          return `<circle cx="${x}" cy="${y}" r="${r}" ${attrs}/>`;
+        case 1: // /
+          return `<line x1="${cx + margin}" y1="${cy + cellSize - margin}" x2="${cx + cellSize - margin}" y2="${cy + margin}" ${attrs}/>`;
+        case 2: // \
+          return `<line x1="${cx + margin}" y1="${cy + margin}" x2="${cx + cellSize - margin}" y2="${cy + cellSize - margin}" ${attrs}/>`;
+        case 3: // X
+          return `
+            <line x1="${cx + margin}" y1="${cy + cellSize - margin}" x2="${cx + cellSize - margin}" y2="${cy + margin}" ${attrs}/>
+            <line x1="${cx + margin}" y1="${cy + margin}" x2="${cx + cellSize - margin}" y2="${cy + cellSize - margin}" ${attrs}/>
+          `;
+      }
+    }
+
+    function symbolGridHtml(a, b, c, d, size = 40) {
+      const cellSize = size / 2;
+      const strokeWidth = Math.max(1.5, size * 0.045);
+      const cells = [
+        symbolPath(a, 0, 0, cellSize, strokeWidth),
+        symbolPath(b, cellSize, 0, cellSize, strokeWidth),
+        symbolPath(c, 0, cellSize, cellSize, strokeWidth),
+        symbolPath(d, cellSize, cellSize, cellSize, strokeWidth),
+      ].join('');
+      return `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet" style="color:#e4e4e7">${cells}</svg>`;
     }
 
     function dotLineSvg(index, size = 40) {
