@@ -21,4 +21,4 @@
 open index.html
 ```
 
-または GitHub Pages で公開しています: https://elzup.github.io/4up4/
+または GitHub Pages で公開しています: https://elzup.github.io/fupf/
