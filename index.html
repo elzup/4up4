@@ -244,10 +244,10 @@
     const CORNER_NAMES = { 0: '左上', 1: '右上', 2: '左下', 3: '右下' };
 
     const EDGE_STYLES = {
-      0: { width: 0, dash: '', wave: false, label: '-' },
-      1: { width: 2, dash: '', wave: false, label: '-' },
-      2: { width: 2, dash: '4 3', wave: false, label: '~' },
-      3: { width: 2, dash: '', wave: true, label: '=' },
+      0: { width: 0, dash: '', wave: false },
+      1: { width: 2, dash: '', wave: false },
+      2: { width: 2, dash: '4 3', wave: false },
+      3: { width: 2, dash: '', wave: true },
     };
 
     const SYMBOL_SETS = [
@@ -331,13 +331,21 @@
         return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${attrs} stroke-dasharray="${EDGE_STYLES[style].dash}"/>`;
       }
       if (EDGE_STYLES[style].wave) {
-        const midX = (x1 + x2) / 2;
-        const midY = (y1 + y2) / 2;
         const dx = x2 - x1, dy = y2 - y1;
         const len = Math.hypot(dx, dy);
-        const nx = -dy / len * 3;
-        const ny = dx / len * 3;
-        return `<path d="M${x1},${y1} Q${midX + nx},${midY + ny} ${x2},${y2}" ${attrs}/>`;
+        const nx = -dy / len;
+        const ny = dx / len;
+        const amp = len * 0.16;
+        const steps = 4;
+        let d = `M${x1},${y1}`;
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          const bx = x1 + dx * t;
+          const by = y1 + dy * t;
+          const sign = i % 2 === 1 ? 1 : -1;
+          d += ` L${bx + nx * amp * sign},${by + ny * amp * sign}`;
+        }
+        return `<path d="${d}" ${attrs} stroke-linejoin="round"/>`;
       }
       return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${attrs}/>`;
     }
@@ -567,8 +575,7 @@
 
     function edgeNotation({ a, b, c, d }) {
       const fmt = v => v.toString(2).padStart(2, '0');
-      const sep = [EDGE_STYLES[a].label, EDGE_STYLES[b].label, EDGE_STYLES[c].label];
-      return `${fmt(a)}${sep[0]}${fmt(b)}${sep[1]}${fmt(c)}${sep[2]}${fmt(d)}`;
+      return `${fmt(a)}-${fmt(b)}-${fmt(c)}-${fmt(d)}`;
     }
 
     function symbolNotation({ a, b, c, d }) {
@@ -588,7 +595,8 @@
           <div class="legend-item"><svg viewBox="0 0 40 16"><line x1="2" y1="8" x2="38" y2="8" stroke="#71717a" stroke-width="2"/></svg><span>00 — 無し（非表示）</span></div>
           <div class="legend-item"><svg viewBox="0 0 40 16"><line x1="2" y1="8" x2="38" y2="8" stroke="#e4e4e7" stroke-width="2"/></svg><span>01 — 実線</span></div>
           <div class="legend-item"><svg viewBox="0 0 40 16"><line x1="2" y1="8" x2="38" y2="8" stroke="#e4e4e7" stroke-width="2" stroke-dasharray="4 3"/></svg><span>10 — 破線</span></div>
-          <div class="legend-item"><svg viewBox="0 0 40 16"><path d="M2,8 Q10,2 18,8 T34,8" fill="none" stroke="#e4e4e7" stroke-width="2"/></svg><span>11 — 波線</span></div>
+          <div class="legend-item"><svg viewBox="0 0 40 16"><path d="M2,8 L10,13 L19,3 L29,13 L38,3" fill="none" stroke="#e4e4e7" stroke-width="2" stroke-linejoin="round"/></svg><span>11 — ジグザグ線</span></div>
+          <div class="legend-item" style="margin-top:8px;color:var(--muted)">各辺の値はハイフン区切りで表示されます。</div>
         `;
       } else if (currentMode === 'symbols') {
         const set = SYMBOL_SETS[currentSymbolSet];
