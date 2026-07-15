@@ -1,0 +1,86 @@
+import type { AppState, Mode, PatternState, PolygonVariant } from './types'
+
+export function popcount(n: number): number {
+  let c = 0
+  let v = n
+  while (v) {
+    c += v & 1
+    v >>= 1
+  }
+  return c
+}
+
+export function stateFromIndex(index: number): PatternState {
+  return {
+    a: (index >> 6) & 3,
+    b: (index >> 4) & 3,
+    c: (index >> 2) & 3,
+    d: index & 3,
+  }
+}
+
+export function fmt2bit(v: number): string {
+  return v.toString(2).padStart(2, '0')
+}
+
+export function boxCornerCode(index: number, k: number): number {
+  // 上=bit7-6, 右=bit5-4, 下=bit3-2, 左=bit1-0
+  return (index >> (6 - k * 2)) & 3
+}
+
+export function isValidMode(value: unknown): value is Mode {
+  return (
+    typeof value === 'string' &&
+    [
+      'edges',
+      'symbols',
+      'triSplit',
+      'path',
+      'dotLine',
+      'aster',
+      'box',
+      'pos16',
+    ].includes(
+      value,
+    )
+  )
+}
+
+export function isValidPolygonVariant(
+  value: unknown,
+): value is PolygonVariant {
+  return (
+    typeof value === 'string' &&
+    ['normal', 'rhombus', 'inverse'].includes(value)
+  )
+}
+
+export function loadState(partial: unknown): Partial<AppState> {
+  if (!partial || typeof partial !== 'object') return {}
+  const s = partial as Record<string, unknown>
+  const result: Partial<AppState> = {}
+
+  if (isValidMode(s.currentMode)) result.currentMode = s.currentMode
+  if (typeof s.currentSymbolSet === 'number')
+    result.currentSymbolSet = s.currentSymbolSet
+  if (typeof s.highlightDuplicates === 'boolean')
+    result.highlightDuplicates = s.highlightDuplicates
+  if (isValidPolygonVariant(s.polygonVariant))
+    result.polygonVariant = s.polygonVariant
+  if (typeof s.asterFillMode === 'string')
+    result.asterFillMode = s.asterFillMode as AppState['asterFillMode']
+  if (typeof s.asterFillColor === 'string')
+    result.asterFillColor = s.asterFillColor as AppState['asterFillColor']
+  if (typeof s.asterCross === 'boolean') result.asterCross = s.asterCross
+  if (typeof s.boxEdgeColor === 'string')
+    result.boxEdgeColor = s.boxEdgeColor as AppState['boxEdgeColor']
+  if (typeof s.notationStyle === 'string')
+    result.notationStyle = s.notationStyle as AppState['notationStyle']
+  if (typeof s.monochrome === 'boolean') result.monochrome = s.monochrome
+  if (typeof s.emphasizeSingleBit === 'boolean')
+    result.emphasizeSingleBit = s.emphasizeSingleBit
+  if (Number.isInteger(s.selectedIndex))
+    result.selectedIndex = s.selectedIndex as number
+
+  return result
+}
