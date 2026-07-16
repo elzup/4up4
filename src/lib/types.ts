@@ -12,7 +12,7 @@ export type PolygonVariant = 'normal' | 'rhombus' | 'inverse'
 export type AsterFillMode = 'none' | 'alpha' | 'solid'
 export type AsterFillColor = 'segment' | 'run'
 export type BoxEdgeColor = 'single' | 'angle' | 'xy' | 'grad'
-export type NotationStyle = 'default' | 'bin' | 'bar' | 'dot'
+export type NotationStyle = 'default' | 'bin' | 'hex' | 'bar' | 'dot'
 
 export interface PatternState {
   a: number

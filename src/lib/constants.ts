@@ -145,6 +145,7 @@ export const NOTATION_STYLES: Array<{
 }> = [
   { value: 'default', label: 'モード既定' },
   { value: 'bin', label: '2進' },
+  { value: 'hex', label: 'HEX' },
   { value: 'bar', label: '_ |' },
   { value: 'dot', label: '· ●' },
 ]

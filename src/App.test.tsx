@@ -78,6 +78,18 @@ describe('App', () => {
     expect(radio).toBeChecked()
   })
 
+  it('shows uppercase hexadecimal notation', () => {
+    render(<App />)
+    const radio = screen.getByLabelText('HEX')
+    fireEvent.click(radio)
+
+    expect(radio).toBeChecked()
+    expect(document.querySelector('#cell-10 .notation')?.textContent).toBe('0A')
+    expect(document.querySelector('#cell-255 .notation')?.textContent).toBe(
+      'FF',
+    )
+  })
+
   it('persists selected index to localStorage', () => {
     render(<App />)
     const cell = document.getElementById('cell-77')

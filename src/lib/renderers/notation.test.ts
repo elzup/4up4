@@ -11,6 +11,12 @@ describe('styleNotation', () => {
     expect(styleNotation(0b00000000, '', 'bin')).toBe('00-00-00-00')
   })
 
+  it('formats hexadecimal as two uppercase digits', () => {
+    expect(styleNotation(0, '', 'hex')).toBe('00')
+    expect(styleNotation(10, '', 'hex')).toBe('0A')
+    expect(styleNotation(255, '', 'hex')).toBe('FF')
+  })
+
   it('formats bar notation', () => {
     expect(styleNotation(0b10101010, '', 'bar')).toBe('|_|_|_|_')
     expect(styleNotation(0b01010101, '', 'bar')).toBe('_|_|_|_|')
@@ -28,6 +34,7 @@ describe('notationIsGlyph', () => {
     expect(notationIsGlyph('bar')).toBe(true)
     expect(notationIsGlyph('dot')).toBe(true)
     expect(notationIsGlyph('bin')).toBe(false)
+    expect(notationIsGlyph('hex')).toBe(false)
     expect(notationIsGlyph('default')).toBe(false)
   })
 })
