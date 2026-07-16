@@ -55,18 +55,22 @@ export function Grid(props: GridProps) {
       <div className="grid-controls">
         <div className="bit-sampling" aria-label="bit sampling">
           <span className="grid-controls-label">sampling</span>
-          <div className="bit-toggle-group">
+          <div className="bit-section-switch">
             {SAMPLING_BITS.map((bit) => (
-              <label key={bit} className="toggle-inline">
+              <label key={bit} className="bit-section" title={`bit${bit}`}>
                 <input
                   type="checkbox"
+                  className="bit-section-input"
                   aria-label={`bit${bit}`}
                   checked={pagingBits.includes(bit)}
                   onChange={(event) =>
                     togglePagingBit(bit, event.target.checked)
                   }
                 />
-                <span>{bit}</span>
+                <span className="bit-section-face" aria-hidden="true">
+                  <span className="bit-section-number">{bit}</span>
+                  <span className="bit-section-indicator" />
+                </span>
               </label>
             ))}
           </div>

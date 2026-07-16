@@ -288,24 +288,6 @@ aside h2 {
   gap: 6px;
 }
 
-.bit-toggle-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.toggle-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--grid-line);
-  border-radius: 6px;
-  padding: 6px 8px;
-}
-
 .radio-group input {
   position: absolute;
   opacity: 0;
@@ -386,30 +368,89 @@ aside h2 {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 6px;
-  background: var(--panel);
+  padding: 4px 5px 4px 7px;
+  background: linear-gradient(180deg, #27272a, #18181b);
   border: 1px solid var(--grid-line);
-  border-radius: 6px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px rgb(255 255 255 / 4%);
 }
 
 .grid-controls-label {
   color: var(--muted);
   font-size: 0.65rem;
+  letter-spacing: 0.04em;
 }
 
-.bit-sampling .bit-toggle-group {
-  gap: 4px;
+.bit-section-switch {
+  display: grid;
+  grid-template-columns: repeat(8, 22px);
+  overflow: hidden;
+  background: #09090b;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
 }
 
-.bit-sampling .toggle-inline {
-  gap: 1px;
-  font-size: 0.65rem;
+.bit-section {
+  position: relative;
+  height: 32px;
+  cursor: pointer;
 }
 
-.bit-sampling input {
-  width: 12px;
-  height: 12px;
+.bit-section + .bit-section {
+  border-left: 1px solid #27272a;
+}
+
+.bit-section-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   margin: 0;
+  opacity: 0;
+}
+
+.bit-section-face {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #71717a;
+  transition: 120ms ease;
+}
+
+.bit-section-number {
+  font-size: 0.58rem;
+  line-height: 1;
+}
+
+.bit-section-indicator {
+  width: 3px;
+  height: 10px;
+  background: #3f3f46;
+  border-radius: 999px;
+  transition: 120ms ease;
+}
+
+.bit-section:hover .bit-section-face {
+  color: var(--text);
+  background: rgb(255 255 255 / 4%);
+}
+
+.bit-section-input:focus-visible + .bit-section-face {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.bit-section-input:checked + .bit-section-face {
+  color: #cffafe;
+  background: linear-gradient(180deg, rgb(34 211 238 / 22%), rgb(34 211 238 / 7%));
+  box-shadow: inset 0 1px rgb(103 232 249 / 20%);
+}
+
+.bit-section-input:checked + .bit-section-face .bit-section-indicator {
+  background: var(--accent);
+  box-shadow: 0 0 7px rgb(34 211 238 / 70%);
 }
 
 .grid-pager {

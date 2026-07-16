@@ -141,8 +141,9 @@ describe('App', () => {
     expect(document.querySelectorAll('.cell').length).toBe(64)
     expect(screen.getByText('1 / 4')).toBeInTheDocument()
     expect(
-      document.querySelector('.grid-controls .bit-toggle-group'),
+      document.querySelector('.grid-controls .bit-section-switch'),
     ).toBeInTheDocument()
+    expect(document.querySelectorAll('.bit-section')).toHaveLength(8)
     expect(
       document.querySelector('.grid-controls .grid-pager'),
     ).toBeInTheDocument()
