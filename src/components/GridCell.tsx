@@ -43,7 +43,7 @@ export function GridCell(props: GridCellProps) {
       className={className}
       id={`cell-${props.index}`}
       style={
-        props.useMatrixLayout === false
+        !props.useMatrixLayout
           ? undefined
           : {
               gridColumn: (props.index % 16) + 3,

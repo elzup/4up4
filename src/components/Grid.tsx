@@ -26,21 +26,19 @@ interface GridProps {
 
 export function Grid(props: GridProps) {
   const allCells = Array.from({ length: 256 }, (_, i) => i)
-  const pagingBits = [...new Set(props.samplingPageBits)]
-    .filter((bit) => Number.isInteger(bit) && bit >= 0 && bit <= 7)
-    .sort((a, b) => b - a)
+  const pagingBits = props.samplingPageBits
   const pageCount = 1 << pagingBits.length
-  const currentPage = pagingBits.length
-    ? props.samplingPage % pageCount
-    : 0
+  const currentPage = props.samplingPage % pageCount
+  const matchesPageBits = (index: number): boolean =>
+    pagingBits.every((bit, order) => {
+      const pageBitPosition = pagingBits.length - 1 - order
+      const expected = (currentPage >> pageBitPosition) & 1
+      return ((index >> bit) & 1) === expected
+    })
   const cells = pagingBits.length
-    ? allCells.filter((index) =>
-        pagingBits.every((bit, order) => {
-          const expected = (currentPage >> (pagingBits.length - 1 - order)) & 1
-          return ((index >> bit) & 1) === expected
-        }),
-      )
+    ? allCells.filter(matchesPageBits)
     : allCells
+  const useMatrixLayout = !pagingBits.length
 
   return (
     <section id="grid">
@@ -69,15 +67,15 @@ export function Grid(props: GridProps) {
         </div>
       )}
 
-      <div className={pagingBits.length ? 'grid-sampling' : 'grid'}>
-        {!pagingBits.length && (
+      <div className={useMatrixLayout ? 'grid' : 'grid-sampling'}>
+        {useMatrixLayout && (
           <div
             className="grid-corner"
             style={{ gridColumn: '1 / span 2', gridRow: '1 / span 2' }}
           />
         )}
 
-        {!pagingBits.length &&
+        {useMatrixLayout &&
           Array.from({ length: 4 }, (_, g) => (
             <div
               key={`top-group-${g}`}
@@ -88,7 +86,7 @@ export function Grid(props: GridProps) {
             </div>
           ))}
 
-        {!pagingBits.length &&
+        {useMatrixLayout &&
           Array.from({ length: 16 }, (_, c) => (
             <div
               key={`top-cell-${c}`}
@@ -99,7 +97,7 @@ export function Grid(props: GridProps) {
             </div>
           ))}
 
-        {!pagingBits.length &&
+        {useMatrixLayout &&
           Array.from({ length: 4 }, (_, g) => (
             <div
               key={`left-group-${g}`}
@@ -110,7 +108,7 @@ export function Grid(props: GridProps) {
             </div>
           ))}
 
-        {!pagingBits.length &&
+        {useMatrixLayout &&
           Array.from({ length: 16 }, (_, r) => (
             <div
               key={`left-cell-${r}`}
@@ -122,7 +120,7 @@ export function Grid(props: GridProps) {
           ))}
 
         {cells.map((index) => (
-          <GridCell key={index} index={index} {...props} useMatrixLayout={!pagingBits.length} />
+          <GridCell key={index} index={index} {...props} useMatrixLayout={useMatrixLayout} />
         ))}
       </div>
     </section>

@@ -6,6 +6,7 @@ import {
   POLYGON_VARIANTS,
   SYMBOL_SET_LABELS,
 } from '../lib/constants'
+import { normalizeSamplingPageBits } from '../lib/state'
 import type { AppState, Mode } from '../lib/types'
 
 interface OptionsPanelProps {
@@ -40,13 +41,13 @@ export function OptionsPanel(props: OptionsPanelProps) {
     const next = checked
       ? [...props.samplingPageBits, bit]
       : props.samplingPageBits.filter((value) => value !== bit)
-    props.onSamplingPageBitsChange([...new Set(next)].sort((a, b) => b - a))
+    props.onSamplingPageBitsChange(normalizeSamplingPageBits(next))
   }
 
   return (
     <div className="options-area">
       <div className="path-options visible">
-        <span className="select-label">グリッドSampling（ページングbit）</span>
+        <span className="select-label">グリッドサンプリング（ページングビット）</span>
         <div className="bit-toggle-group">
           {bits.map((bit) => (
             <label key={bit} className="toggle-inline">
