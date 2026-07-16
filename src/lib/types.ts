@@ -34,6 +34,7 @@ export interface AppState {
   notationStyle: NotationStyle
   monochrome: boolean
   emphasizeSingleBit: boolean
+  pos16OptionsVersion: number
   pos16ShowLine: boolean
   pos16ShowNeighborhood: boolean
   pos16ShowBoundary: boolean

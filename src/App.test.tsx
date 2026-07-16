@@ -37,9 +37,9 @@ describe('App', () => {
     const pos16Button = screen.getByRole('button', { name: '16² pos' })
     fireEvent.click(pos16Button)
     expect(pos16Button).toHaveClass('active')
-    expect(screen.getByLabelText('接続線を表示')).toBeChecked()
-    expect(screen.getByLabelText('9近傍を塗る')).toBeChecked()
-    expect(screen.getByLabelText('塗り領域の境界線を表示')).not.toBeChecked()
+    expect(screen.getByLabelText('接続線を表示')).not.toBeChecked()
+    expect(screen.getByLabelText('9近傍を塗る')).not.toBeChecked()
+    expect(screen.getByLabelText('塗り領域の境界線を表示')).toBeChecked()
   })
 
   it('updates pos16 display options', () => {
@@ -53,14 +53,14 @@ describe('App', () => {
     fireEvent.click(neighborhood)
     fireEvent.click(boundary)
 
-    expect(line).not.toBeChecked()
-    expect(neighborhood).not.toBeChecked()
-    expect(boundary).toBeChecked()
+    expect(line).toBeChecked()
+    expect(neighborhood).toBeChecked()
+    expect(boundary).not.toBeChecked()
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
     expect(stored).toMatchObject({
-      pos16ShowLine: false,
-      pos16ShowNeighborhood: false,
-      pos16ShowBoundary: true,
+      pos16ShowLine: true,
+      pos16ShowNeighborhood: true,
+      pos16ShowBoundary: false,
     })
   })
 

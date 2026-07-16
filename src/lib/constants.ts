@@ -1,6 +1,7 @@
 import type { AppState, Mode, PolygonVariant } from './types'
 
 export const STORAGE_KEY = 'fupf-state'
+export const POS16_OPTIONS_VERSION = 1
 
 export const MODES: Mode[] = [
   'edges',
@@ -37,9 +38,10 @@ export const DEFAULT_STATE: AppState = {
   notationStyle: 'default',
   monochrome: false,
   emphasizeSingleBit: false,
-  pos16ShowLine: true,
-  pos16ShowNeighborhood: true,
-  pos16ShowBoundary: false,
+  pos16OptionsVersion: POS16_OPTIONS_VERSION,
+  pos16ShowLine: false,
+  pos16ShowNeighborhood: false,
+  pos16ShowBoundary: true,
 }
 
 // Aster 8方向の配色（上から時計回りの色相環）

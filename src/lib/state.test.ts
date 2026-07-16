@@ -94,6 +94,7 @@ describe('loadState', () => {
       notationStyle: 'dot',
       monochrome: true,
       emphasizeSingleBit: true,
+      pos16OptionsVersion: 1,
       pos16ShowLine: false,
       pos16ShowNeighborhood: false,
       pos16ShowBoundary: true,

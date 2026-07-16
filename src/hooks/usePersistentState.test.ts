@@ -24,6 +24,37 @@ describe('usePersistentState', () => {
     expect(result.current[0].selectedIndex).toBe(42)
   })
 
+  it('migrates legacy pos16 options to the new defaults', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        pos16ShowLine: true,
+        pos16ShowNeighborhood: true,
+        pos16ShowBoundary: false,
+      }),
+    )
+    const { result } = renderHook(() => usePersistentState())
+    expect(result.current[0].pos16ShowLine).toBe(false)
+    expect(result.current[0].pos16ShowNeighborhood).toBe(false)
+    expect(result.current[0].pos16ShowBoundary).toBe(true)
+  })
+
+  it('keeps pos16 options saved with the current version', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        pos16OptionsVersion: 1,
+        pos16ShowLine: true,
+        pos16ShowNeighborhood: true,
+        pos16ShowBoundary: false,
+      }),
+    )
+    const { result } = renderHook(() => usePersistentState())
+    expect(result.current[0].pos16ShowLine).toBe(true)
+    expect(result.current[0].pos16ShowNeighborhood).toBe(true)
+    expect(result.current[0].pos16ShowBoundary).toBe(false)
+  })
+
   it('updates state and persists to localStorage', () => {
     const { result } = renderHook(() => usePersistentState())
     act(() => {

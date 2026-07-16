@@ -1,4 +1,5 @@
 import type { AppState, Mode, PatternState, PolygonVariant } from './types'
+import { POS16_OPTIONS_VERSION } from './constants'
 
 export function popcount(n: number): number {
   let c = 0
@@ -79,12 +80,15 @@ export function loadState(partial: unknown): Partial<AppState> {
   if (typeof s.monochrome === 'boolean') result.monochrome = s.monochrome
   if (typeof s.emphasizeSingleBit === 'boolean')
     result.emphasizeSingleBit = s.emphasizeSingleBit
-  if (typeof s.pos16ShowLine === 'boolean')
-    result.pos16ShowLine = s.pos16ShowLine
-  if (typeof s.pos16ShowNeighborhood === 'boolean')
-    result.pos16ShowNeighborhood = s.pos16ShowNeighborhood
-  if (typeof s.pos16ShowBoundary === 'boolean')
-    result.pos16ShowBoundary = s.pos16ShowBoundary
+  if (s.pos16OptionsVersion === POS16_OPTIONS_VERSION) {
+    result.pos16OptionsVersion = POS16_OPTIONS_VERSION
+    if (typeof s.pos16ShowLine === 'boolean')
+      result.pos16ShowLine = s.pos16ShowLine
+    if (typeof s.pos16ShowNeighborhood === 'boolean')
+      result.pos16ShowNeighborhood = s.pos16ShowNeighborhood
+    if (typeof s.pos16ShowBoundary === 'boolean')
+      result.pos16ShowBoundary = s.pos16ShowBoundary
+  }
   if (Number.isInteger(s.selectedIndex))
     result.selectedIndex = s.selectedIndex as number
 
