@@ -19,6 +19,17 @@ describe('App', () => {
     expect(screen.getByLabelText('bit7')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: '前ページ' })).toBeNull()
     expect(screen.queryByRole('button', { name: '次ページ' })).toBeNull()
+    expect(document.querySelectorAll('.mode-sample')).toHaveLength(13)
+    expect(
+      document.querySelectorAll('.mode-sample[data-mode="symbols"]'),
+    ).toHaveLength(4)
+    expect(
+      document.querySelectorAll('.mode-sample[data-mode="triSplit"]'),
+    ).toHaveLength(2)
+    expect(document.querySelector('.mode-sample')).toHaveAttribute(
+      'data-pattern-index',
+      '99',
+    )
   })
 
   it('selects a cell on click', () => {

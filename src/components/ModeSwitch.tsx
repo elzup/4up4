@@ -1,4 +1,5 @@
 import { MODE_LABELS } from '../lib/constants'
+import { MODE_SAMPLE_INDEX, renderModeSamples } from '../lib/modeSamples'
 import type { Mode } from '../lib/types'
 
 interface ModeSwitchProps {
@@ -6,69 +7,65 @@ interface ModeSwitchProps {
   onChange: (mode: Mode) => void
 }
 
+interface ModeButtonProps extends ModeSwitchProps {
+  mode: Mode
+}
+
+function ModeButton({ mode, currentMode, onChange }: ModeButtonProps) {
+  const samples = renderModeSamples(mode)
+
+  return (
+    <button
+      type="button"
+      className={currentMode === mode ? 'active' : ''}
+      onClick={() => onChange(mode)}
+    >
+      <span
+        className="mode-samples"
+        data-sample-count={samples.length}
+        aria-hidden="true"
+      >
+        {samples.map((graphic, index) => (
+          <span
+            key={index}
+            className="mode-sample"
+            data-mode={mode}
+            data-pattern-index={MODE_SAMPLE_INDEX}
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: graphic }}
+          />
+        ))}
+      </span>
+      <span>{MODE_LABELS[mode]}</span>
+    </button>
+  )
+}
+
 export function ModeSwitch({ currentMode, onChange }: ModeSwitchProps) {
   return (
     <div className="mode-switch">
-      <button
-        type="button"
-        className={currentMode === 'edges' ? 'active' : ''}
-        onClick={() => onChange('edges')}
-      >
-        {MODE_LABELS.edges}
-      </button>
+      <ModeButton mode="edges" currentMode={currentMode} onChange={onChange} />
       <span className="mode-separator" />
       <div className="mode-group">
         {(['symbols', 'triSplit', 'path'] as const).map((mode) => (
-          <button
+          <ModeButton
             key={mode}
-            type="button"
-            className={currentMode === mode ? 'active' : ''}
-            onClick={() => onChange(mode)}
-          >
-            {MODE_LABELS[mode]}
-          </button>
+            mode={mode}
+            currentMode={currentMode}
+            onChange={onChange}
+          />
         ))}
       </div>
       <span className="mode-separator" />
-      <button
-        type="button"
-        className={currentMode === 'dotLine' ? 'active' : ''}
-        onClick={() => onChange('dotLine')}
-      >
-        {MODE_LABELS.dotLine}
-      </button>
+      <ModeButton mode="dotLine" currentMode={currentMode} onChange={onChange} />
       <span className="mode-separator" />
-      <button
-        type="button"
-        className={currentMode === 'aster' ? 'active' : ''}
-        onClick={() => onChange('aster')}
-      >
-        {MODE_LABELS.aster}
-      </button>
+      <ModeButton mode="aster" currentMode={currentMode} onChange={onChange} />
       <span className="mode-separator" />
-      <button
-        type="button"
-        className={currentMode === 'box' ? 'active' : ''}
-        onClick={() => onChange('box')}
-      >
-        {MODE_LABELS.box}
-      </button>
+      <ModeButton mode="box" currentMode={currentMode} onChange={onChange} />
       <span className="mode-separator" />
-      <button
-        type="button"
-        className={currentMode === 'pos16' ? 'active' : ''}
-        onClick={() => onChange('pos16')}
-      >
-        {MODE_LABELS.pos16}
-      </button>
+      <ModeButton mode="pos16" currentMode={currentMode} onChange={onChange} />
       <span className="mode-separator" />
-      <button
-        type="button"
-        className={currentMode === 'amida' ? 'active' : ''}
-        onClick={() => onChange('amida')}
-      >
-        {MODE_LABELS.amida}
-      </button>
+      <ModeButton mode="amida" currentMode={currentMode} onChange={onChange} />
     </div>
   )
 }

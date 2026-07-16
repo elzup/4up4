@@ -50,6 +50,7 @@ h1 {
 
 .mode-switch {
   display: flex;
+  align-items: stretch;
   gap: 8px;
   background: var(--panel);
   padding: 4px;
@@ -70,16 +71,58 @@ h1 {
 }
 
 .mode-switch button {
+  display: flex;
+  min-width: 52px;
+  min-height: 58px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
   background: transparent;
   border: none;
   color: var(--muted);
   font-family: inherit;
   font-size: 0.8rem;
-  padding: 8px 14px;
+  padding: 5px 8px 6px;
   border-radius: 6px;
   cursor: pointer;
   transition: 0.15s;
   white-space: nowrap;
+}
+
+.mode-samples {
+  display: flex;
+  min-height: 26px;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  background: #0f0f11;
+  border: 1px solid #27272a;
+  border-radius: 5px;
+}
+
+.mode-sample {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.mode-samples[data-sample-count='2'] .mode-sample {
+  width: 18px;
+  height: 18px;
+}
+
+.mode-samples[data-sample-count='4'] .mode-sample {
+  width: 13px;
+  height: 13px;
+}
+
+.mode-sample svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .mode-switch button:hover {
