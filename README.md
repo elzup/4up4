@@ -4,6 +4,10 @@
 
 `4↑4 = 4^4 = 256` 通りのパターン図形を可視化するプレビューです。
 
+![fupf glyph の 16² pos 表示](docs/fupf-ss.png)
+
+サイト内の Clock demo では、現在の HH・MM・SS をそれぞれ 256 パターンからほぼ等間隔にサンプルして表示します。
+
 ## ファイル
 
 - `src/` — React + TypeScript のソースコード
