@@ -26,6 +26,38 @@ describe('symbolGridHtml', () => {
       }
     }
   })
+
+  it('renders 11111111 as one large circle over one large cross', () => {
+    const svg = symbolGridHtml({ a: 3, b: 3, c: 3, d: 3 }, 3, 40)
+    expect(svg.match(/data-marubatsu="circle"/g)).toHaveLength(1)
+    expect(svg.match(/data-marubatsu="cross"/g)).toHaveLength(1)
+    expect(svg.match(/<circle/g)).toHaveLength(1)
+    expect(svg.match(/<line/g)).toHaveLength(2)
+  })
+
+  it('maps 01 to the large circle and 10 to the large cross', () => {
+    const circle = symbolGridHtml({ a: 1, b: 1, c: 1, d: 1 }, 3, 40)
+    const cross = symbolGridHtml({ a: 2, b: 2, c: 2, d: 2 }, 3, 40)
+    expect(circle).toContain('data-marubatsu="circle"')
+    expect(circle).not.toContain('data-marubatsu="cross"')
+    expect(cross).not.toContain('data-marubatsu="circle"')
+    expect(cross).toContain('data-marubatsu="cross"')
+  })
+
+  it('clips each large shape to the enabled quadrants', () => {
+    const svg = symbolGridHtml({ a: 1, b: 0, c: 0, d: 2 }, 3, 40)
+    expect(svg.match(/<rect/g)).toHaveLength(2)
+    expect(svg).toContain('data-marubatsu="circle"')
+    expect(svg).toContain('data-marubatsu="cross"')
+  })
+
+  it('connects plus strokes across neighboring tile boundaries', () => {
+    const svg = symbolGridHtml({ a: 3, b: 3, c: 3, d: 3 }, 2, 40)
+    expect(svg).toContain('x1="0" y1="10" x2="20" y2="10"')
+    expect(svg).toContain('x1="20" y1="10" x2="40" y2="10"')
+    expect(svg).toContain('x1="10" y1="0" x2="10" y2="20"')
+    expect(svg).toContain('x1="10" y1="20" x2="10" y2="40"')
+  })
 })
 
 describe('symbolNotation', () => {
@@ -48,5 +80,17 @@ describe('renderSymbolPreview', () => {
         expect(svg).toContain('<svg')
       }
     }
+  })
+
+  it('previews marubatsu values as circle, cross, and their overlay', () => {
+    const circle = renderSymbolPreview(1, 3)
+    const cross = renderSymbolPreview(2, 3)
+    const overlay = renderSymbolPreview(3, 3)
+    expect(circle).toContain('data-marubatsu="circle"')
+    expect(circle).not.toContain('data-marubatsu="cross"')
+    expect(cross).not.toContain('data-marubatsu="circle"')
+    expect(cross).toContain('data-marubatsu="cross"')
+    expect(overlay).toContain('data-marubatsu="circle"')
+    expect(overlay).toContain('data-marubatsu="cross"')
   })
 })

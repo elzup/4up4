@@ -2,7 +2,7 @@ import type { PatternState } from '../types'
 
 const SYMBOL_SETS = [
   {
-    name: '0 / \\ X',
+    name: 'なし / \\ X',
     render: (v: number, x: number, y: number, s: number, w: number) => {
       const m = s * 0.18
       const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`
@@ -30,42 +30,36 @@ const SYMBOL_SETS = [
     render: (v: number, x: number, y: number, s: number, w: number) => {
       const cx = x + s / 2
       const cy = y + s / 2
-      const m = s * 0.18
-      const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`
+      const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="butt"`
       if (v === 0) return ''
       if (v === 1)
-        return `<line x1="${x + m}" y1="${cy}" x2="${x + s - m}" y2="${cy}" ${attrs}/>`
+        return `<line x1="${x}" y1="${cy}" x2="${x + s}" y2="${cy}" ${attrs}/>`
       if (v === 2)
-        return `<line x1="${cx}" y1="${y + m}" x2="${cx}" y2="${y + s - m}" ${attrs}/>`
-      return `<line x1="${x + m}" y1="${cy}" x2="${x + s - m}" y2="${cy}" ${attrs}/><line x1="${cx}" y1="${y + m}" x2="${cx}" y2="${y + s - m}" ${attrs}/>`
-    },
-  },
-  {
-    name: 'マルバツ',
-    render: (v: number, x: number, y: number, s: number, w: number) => {
-      const cx = x + s / 2
-      const cy = y + s / 2
-      const m = s * 0.18
-      const r = (s / 2 - m) * Math.sqrt(2)
-      const attrs = `stroke="#e4e4e7" stroke-width="${w}" fill="none" stroke-linecap="round"`
-      const slash = `<line x1="${x + m}" y1="${y + s - m}" x2="${x + s - m}" y2="${y + m}" ${attrs}/>`
-      const backslash = `<line x1="${x + m}" y1="${y + m}" x2="${x + s - m}" y2="${y + s - m}" ${attrs}/>`
-      const circle = `<circle cx="${cx}" cy="${cy}" r="${r}" ${attrs}/>`
-      if (v === 0) return ''
-      if (v === 1) return slash
-      if (v === 2) return backslash
-      return `${circle}${slash}${backslash}`
+        return `<line x1="${cx}" y1="${y}" x2="${cx}" y2="${y + s}" ${attrs}/>`
+      return `<line x1="${x}" y1="${cy}" x2="${
+        x + s
+      }" y2="${cy}" ${attrs}/><line x1="${cx}" y1="${y}" x2="${cx}" y2="${
+        y + s
+      }" ${attrs}/>`
     },
   },
 ]
 
+const MARUBATSU_SYMBOL_SET = 3
+
 export function symbolGridHtml(
-  { a, b, c, d }: PatternState,
+  state: PatternState,
   currentSymbolSet: number,
   size = 40,
 ): string {
-  const cellSize = size / 2
   const strokeWidth = Math.max(1.5, size * 0.045)
+  if (currentSymbolSet === MARUBATSU_SYMBOL_SET) {
+    const symbols = renderMarubatsu(state, size, strokeWidth)
+    return wrapSymbolSvg(symbols, size)
+  }
+
+  const { a, b, c, d } = state
+  const cellSize = size / 2
   const render = SYMBOL_SETS[currentSymbolSet].render
   const cells = [
     render(a, 0, 0, cellSize, strokeWidth),
@@ -73,7 +67,66 @@ export function symbolGridHtml(
     render(c, 0, cellSize, cellSize, strokeWidth),
     render(d, cellSize, cellSize, cellSize, strokeWidth),
   ].join('')
-  return `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet" style="color:#e4e4e7">${cells}</svg>`
+  return wrapSymbolSvg(cells, size)
+}
+
+function wrapSymbolSvg(content: string, size: number): string {
+  return `<svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="xMidYMid meet" style="color:#e4e4e7">${content}</svg>`
+}
+
+function renderMarubatsu(
+  { a, b, c, d }: PatternState,
+  size: number,
+  strokeWidth: number,
+): string {
+  const values = [a, b, c, d]
+  const idBase = `marubatsu-${values.join('')}-${size}`
+  const circleClipId = `${idBase}-circle`
+  const crossClipId = `${idBase}-cross`
+  const circleRects = renderQuadrantRects(values, size, 1)
+  const crossRects = renderQuadrantRects(values, size, 2)
+  const definitions = `${renderClipPath(
+    circleClipId,
+    circleRects,
+  )}${renderClipPath(crossClipId, crossRects)}`
+  const attributes = `stroke="#e4e4e7" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round"`
+  const center = size / 2
+  const margin = size * 0.12
+  const circle = circleRects
+    ? `<circle data-marubatsu="circle" cx="${center}" cy="${center}" r="${
+        size * 0.38
+      }" clip-path="url(#${circleClipId})" ${attributes}/>`
+    : ''
+  const cross = crossRects
+    ? `<g data-marubatsu="cross" clip-path="url(#${crossClipId})"><line x1="${margin}" y1="${margin}" x2="${
+        size - margin
+      }" y2="${size - margin}" ${attributes}/><line x1="${
+        size - margin
+      }" y1="${margin}" x2="${margin}" y2="${
+        size - margin
+      }" ${attributes}/></g>`
+    : ''
+  return `<defs>${definitions}</defs>${circle}${cross}`
+}
+
+function renderQuadrantRects(
+  values: number[],
+  size: number,
+  bit: 1 | 2,
+): string {
+  const cellSize = size / 2
+  return values
+    .map((value, index) => {
+      if ((value & bit) === 0) return ''
+      const x = (index % 2) * cellSize
+      const y = Math.floor(index / 2) * cellSize
+      return `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}"/>`
+    })
+    .join('')
+}
+
+function renderClipPath(id: string, rectangles: string): string {
+  return rectangles ? `<clipPath id="${id}">${rectangles}</clipPath>` : ''
 }
 
 export function symbolNotation({ a, b, c, d }: PatternState): string {
@@ -86,6 +139,14 @@ export function renderSymbolPreview(
   size = 18,
   strokeWidth = 2,
 ): string {
+  if (symbolSetIndex === MARUBATSU_SYMBOL_SET) {
+    const symbols = renderMarubatsu(
+      { a: value, b: value, c: value, d: value },
+      size,
+      strokeWidth,
+    )
+    return `<svg viewBox="0 0 ${size} ${size}" width="18" height="18">${symbols}</svg>`
+  }
   const render = SYMBOL_SETS[symbolSetIndex].render
   return `<svg viewBox="0 0 ${size} ${size}" width="18" height="18">${render(value, 0, 0, size, strokeWidth)}</svg>`
 }

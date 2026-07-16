@@ -32,6 +32,12 @@ describe('App', () => {
     expect(asterButton).toHaveClass('active')
   })
 
+  it('labels the empty and diagonal symbol set clearly', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'タイル' }))
+    expect(screen.getByLabelText('なし / \\ X')).toBeInTheDocument()
+  })
+
   it('switches to pos16 mode', () => {
     render(<App />)
     const pos16Button = screen.getByRole('button', { name: '16² pos' })

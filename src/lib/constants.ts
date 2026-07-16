@@ -153,7 +153,7 @@ export const NOTATION_STYLES: Array<{
 ]
 
 export const SYMBOL_SET_LABELS = [
-  '0 / \\ X',
+  'なし / \\ X',
   '点の大きさ',
   '— | +',
   'マルバツ',
