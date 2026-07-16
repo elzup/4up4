@@ -373,12 +373,50 @@ aside h2 {
   gap: 6px;
 }
 
+.grid-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.bit-sampling {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: var(--panel);
+  border: 1px solid var(--grid-line);
+  border-radius: 6px;
+}
+
+.grid-controls-label {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.bit-sampling .bit-toggle-group {
+  gap: 4px;
+}
+
+.bit-sampling .toggle-inline {
+  gap: 1px;
+  font-size: 0.65rem;
+}
+
+.bit-sampling input {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+}
+
 .grid-pager {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.75rem;
 }
 
 .grid-pager button {
@@ -386,18 +424,14 @@ aside h2 {
   border: 1px solid var(--grid-line);
   color: var(--text);
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 4px 7px;
+  font-size: 0.7rem;
   font-family: inherit;
   cursor: pointer;
 }
 
 .grid-pager button:hover {
   border-color: var(--accent);
-}
-
-.grid-pager-note {
-  color: var(--muted);
-  font-size: 0.75rem;
 }
 
 .grid-header {

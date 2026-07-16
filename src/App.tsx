@@ -49,6 +49,9 @@ export default function App() {
           samplingPage={state.samplingPage}
           selectedIndex={state.selectedIndex}
           onSelect={(index) => handleUpdate({ selectedIndex: index })}
+          onSamplingPageBitsChange={(bits) =>
+            handleUpdate({ samplingPageBits: bits, samplingPage: 0 })
+          }
           onSamplingPageChange={(page) => handleUpdate({ samplingPage: page })}
         />
       </main>

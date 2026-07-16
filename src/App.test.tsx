@@ -16,6 +16,9 @@ describe('App', () => {
       'active',
     )
     expect(document.querySelectorAll('.cell').length).toBe(256)
+    expect(screen.getByLabelText('bit7')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '前ページ' })).toBeNull()
+    expect(screen.queryByRole('button', { name: '次ページ' })).toBeNull()
   })
 
   it('selects a cell on click', () => {
@@ -137,6 +140,12 @@ describe('App', () => {
 
     expect(document.querySelectorAll('.cell').length).toBe(64)
     expect(screen.getByText('1 / 4')).toBeInTheDocument()
+    expect(
+      document.querySelector('.grid-controls .bit-toggle-group'),
+    ).toBeInTheDocument()
+    expect(
+      document.querySelector('.grid-controls .grid-pager'),
+    ).toBeInTheDocument()
     expect(document.getElementById('cell-0')).not.toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: '次ページ' }))

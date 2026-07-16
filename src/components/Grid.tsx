@@ -1,4 +1,4 @@
-import { fmt2bit } from '../lib/state'
+import { fmt2bit, normalizeSamplingPageBits } from '../lib/state'
 import { GridCell } from './GridCell'
 import type { AppState, Mode } from '../lib/types'
 
@@ -22,8 +22,11 @@ interface GridProps {
   samplingPage: number
   selectedIndex: number
   onSelect: (index: number) => void
+  onSamplingPageBitsChange: (bits: number[]) => void
   onSamplingPageChange: (page: number) => void
 }
+
+const SAMPLING_BITS = [7, 6, 5, 4, 3, 2, 1, 0]
 
 export function Grid(props: GridProps) {
   const allCells = Array.from({ length: 256 }, (_, i) => i)
@@ -40,33 +43,60 @@ export function Grid(props: GridProps) {
     ? allCells.filter(matchesPageBits)
     : allCells
   const useMatrixLayout = !pagingBits.length
+  const togglePagingBit = (bit: number, checked: boolean) => {
+    const nextBits = checked
+      ? [...pagingBits, bit]
+      : pagingBits.filter((value) => value !== bit)
+    props.onSamplingPageBitsChange(normalizeSamplingPageBits(nextBits))
+  }
 
   return (
     <section id="grid">
-      {pagingBits.length > 0 && (
-        <div className="grid-pager">
-          <button
-            type="button"
-            onClick={() =>
-              props.onSamplingPageChange((currentPage + pageCount - 1) % pageCount)
-            }
-          >
-            前ページ
-          </button>
-          <span>
-            {currentPage + 1} / {pageCount}
-          </span>
-          <button
-            type="button"
-            onClick={() => props.onSamplingPageChange((currentPage + 1) % pageCount)}
-          >
-            次ページ
-          </button>
-          <span className="grid-pager-note">
-            {pagingBits.map((bit) => `bit${bit}`).join(', ')}
-          </span>
+      <div className="grid-controls">
+        <div className="bit-sampling" aria-label="bit sampling">
+          <span className="grid-controls-label">sampling</span>
+          <div className="bit-toggle-group">
+            {SAMPLING_BITS.map((bit) => (
+              <label key={bit} className="toggle-inline">
+                <input
+                  type="checkbox"
+                  aria-label={`bit${bit}`}
+                  checked={pagingBits.includes(bit)}
+                  onChange={(event) =>
+                    togglePagingBit(bit, event.target.checked)
+                  }
+                />
+                <span>{bit}</span>
+              </label>
+            ))}
+          </div>
         </div>
-      )}
+        {pagingBits.length > 0 && (
+          <div className="grid-pager">
+            <button
+              type="button"
+              onClick={() =>
+                props.onSamplingPageChange(
+                  (currentPage + pageCount - 1) % pageCount,
+                )
+              }
+            >
+              前ページ
+            </button>
+            <span>
+              {currentPage + 1} / {pageCount}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                props.onSamplingPageChange((currentPage + 1) % pageCount)
+              }
+            >
+              次ページ
+            </button>
+          </div>
+        )}
+      </div>
 
       <div className={useMatrixLayout ? 'grid' : 'grid-sampling'}>
         {useMatrixLayout && (
@@ -121,7 +151,12 @@ export function Grid(props: GridProps) {
           ))}
 
         {cells.map((index) => (
-          <GridCell key={index} index={index} {...props} useMatrixLayout={useMatrixLayout} />
+          <GridCell
+            key={index}
+            index={index}
+            {...props}
+            useMatrixLayout={useMatrixLayout}
+          />
         ))}
       </div>
     </section>
