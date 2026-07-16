@@ -106,4 +106,20 @@ describe('App', () => {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
     expect(stored.selectedIndex).toBe(77)
   })
+
+  it('filters grid by selected paging bits', () => {
+    render(<App />)
+    fireEvent.click(screen.getByLabelText('bit7'))
+    fireEvent.click(screen.getByLabelText('bit6'))
+
+    expect(document.querySelectorAll('.cell').length).toBe(64)
+    expect(screen.getByText('1 / 4')).toBeInTheDocument()
+    expect(document.getElementById('cell-0')).not.toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: '次ページ' }))
+
+    expect(screen.getByText('2 / 4')).toBeInTheDocument()
+    expect(document.getElementById('cell-0')).toBeNull()
+    expect(document.getElementById('cell-64')).not.toBeNull()
+  })
 })

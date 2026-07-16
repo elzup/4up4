@@ -30,6 +30,7 @@ export function Sidebar({ state, onUpdate }: SidebarProps) {
       />
       <OptionsPanel
         currentMode={state.currentMode}
+        samplingPageBits={state.samplingPageBits}
         currentSymbolSet={state.currentSymbolSet}
         highlightDuplicates={state.highlightDuplicates}
         polygonVariant={state.polygonVariant}
@@ -55,6 +56,9 @@ export function Sidebar({ state, onUpdate }: SidebarProps) {
         }
         onPos16ShowBoundaryChange={(value) =>
           onUpdate({ pos16ShowBoundary: value })
+        }
+        onSamplingPageBitsChange={(value) =>
+          onUpdate({ samplingPageBits: value, samplingPage: 0 })
         }
       />
       <Legend

@@ -91,6 +91,17 @@ export function loadState(partial: unknown): Partial<AppState> {
   }
   if (Number.isInteger(s.selectedIndex))
     result.selectedIndex = s.selectedIndex as number
+  if (
+    Array.isArray(s.samplingPageBits) &&
+    s.samplingPageBits.every(
+      (bit): bit is number => Number.isInteger(bit) && bit >= 0 && bit <= 7,
+    )
+  ) {
+    result.samplingPageBits = [...new Set(s.samplingPageBits)].sort((a, b) => b - a)
+  }
+  if (Number.isInteger(s.samplingPage) && (s.samplingPage as number) >= 0) {
+    result.samplingPage = s.samplingPage as number
+  }
 
   return result
 }
