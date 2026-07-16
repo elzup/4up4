@@ -56,4 +56,11 @@ describe('Preview', () => {
     const { container } = render(<Preview {...baseProps} currentMode="pos16" />)
     expect(container.querySelector('.preview-box')).toBeInTheDocument()
   })
+
+  it('renders amida preview', () => {
+    const { container } = render(<Preview {...baseProps} currentMode="amida" />)
+    expect(
+      container.querySelector('[data-amida-route="true"]'),
+    ).toBeInTheDocument()
+  })
 })

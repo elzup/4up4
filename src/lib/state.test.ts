@@ -54,6 +54,7 @@ describe('isValidMode', () => {
     expect(isValidMode('aster')).toBe(true)
     expect(isValidMode('box')).toBe(true)
     expect(isValidMode('pos16')).toBe(true)
+    expect(isValidMode('amida')).toBe(true)
   })
   it('rejects invalid modes', () => {
     expect(isValidMode('invalid')).toBe(false)
@@ -91,6 +92,7 @@ describe('loadState', () => {
       asterFillColor: 'segment',
       asterCross: false,
       boxEdgeColor: 'xy',
+      amidaRailMode: 'colored',
       notationStyle: 'dot',
       monochrome: true,
       emphasizeSingleBit: true,

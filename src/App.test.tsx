@@ -36,6 +36,29 @@ describe('App', () => {
     expect(asterButton).toHaveClass('active')
   })
 
+  it('switches to amida mode', () => {
+    render(<App />)
+    const amidaButton = screen.getByRole('button', { name: 'あみだ' })
+
+    fireEvent.click(amidaButton)
+
+    expect(amidaButton).toHaveClass('active')
+    expect(screen.getByText('あみだ 凡例')).toBeInTheDocument()
+  })
+
+  it('changes and persists the amida vertical rail display', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'あみだ' }))
+
+    const colored = screen.getByLabelText('別色')
+    fireEvent.click(colored)
+
+    expect(colored).toBeChecked()
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')).toMatchObject({
+      amidaRailMode: 'colored',
+    })
+  })
+
   it('labels the empty and diagonal symbol set clearly', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'タイル' }))

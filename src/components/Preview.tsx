@@ -1,6 +1,9 @@
 import { CORNER_NAMES } from '../lib/constants'
 import type { AppState, Mode } from '../lib/types'
 import {
+  amidaDetail,
+  amidaNotation,
+  amidaSvg,
   asterNotation,
   asterSvg,
   boxNotation,
@@ -33,6 +36,7 @@ interface PreviewProps {
   asterFillColor: AppState['asterFillColor']
   asterCross: boolean
   boxEdgeColor: AppState['boxEdgeColor']
+  amidaRailMode: AppState['amidaRailMode']
   notationStyle: AppState['notationStyle']
   monochrome: boolean
   pos16ShowLine: boolean
@@ -140,6 +144,17 @@ export function Preview(props: PreviewProps) {
       note = pos16Notation(props.selectedIndex)
       label = '4x4 位置→位置'
       detail = pos16Detail(props.selectedIndex)
+      break
+    case 'amida':
+      graphic = amidaSvg(
+        props.selectedIndex,
+        160,
+        props.monochrome,
+        props.amidaRailMode,
+      )
+      note = amidaNotation(props.selectedIndex)
+      label = '横線と経路'
+      detail = amidaDetail(props.selectedIndex)
       break
     default:
       graphic = ''

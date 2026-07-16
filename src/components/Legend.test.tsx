@@ -42,4 +42,9 @@ describe('Legend', () => {
     render(<Legend currentMode="pos16" currentSymbolSet={0} />)
     expect(screen.getByText('16² pos 凡例')).toBeInTheDocument()
   })
+
+  it('renders amida legend', () => {
+    render(<Legend currentMode="amida" currentSymbolSet={0} />)
+    expect(screen.getByText('あみだ 凡例')).toBeInTheDocument()
+  })
 })

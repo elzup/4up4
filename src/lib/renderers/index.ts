@@ -1,3 +1,4 @@
+export * from './amida'
 export * from './aster'
 export * from './box'
 export * from './dotLine'

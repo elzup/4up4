@@ -309,6 +309,43 @@ export function Legend({ currentMode, currentSymbolSet }: LegendProps) {
     )
   }
 
+  if (currentMode === 'amida') {
+    return (
+      <div className="legend">
+        <h2>あみだ 凡例</h2>
+        <div className="legend-item">
+          <span
+            style={{
+              display: 'inline-block',
+              width: 24,
+              height: 2,
+              background: '#f472b6',
+            }}
+          />
+          <span>経路が通らなかった横線</span>
+        </div>
+        <div className="legend-item">
+          <span
+            style={{
+              display: 'inline-block',
+              width: 24,
+              height: 3,
+              background: '#22d3ee',
+              borderRadius: 2,
+            }}
+          />
+          <span>選んだ開始位置から辿る経路</span>
+        </div>
+        <div className="legend-item" style={{ marginTop: 8, color: 'var(--muted)' }}>
+          横線4択³ × 開始位置4択 = 4³ × 4 = 256通り。
+        </div>
+        <div className="legend-item" style={{ marginTop: 8, color: 'var(--muted)' }}>
+          横線にも経路にも触れない縦棒は、通常色／別色／非表示を選択できます。
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="legend">
       <h2>ポリゴン 凡例</h2>

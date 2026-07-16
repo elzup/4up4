@@ -1,4 +1,9 @@
-import type { AppState, Mode, PolygonVariant } from './types'
+import type {
+  AmidaRailMode,
+  AppState,
+  Mode,
+  PolygonVariant,
+} from './types'
 
 export const STORAGE_KEY = 'fupf-state'
 export const POS16_OPTIONS_VERSION = 1
@@ -12,6 +17,7 @@ export const MODES: Mode[] = [
   'aster',
   'box',
   'pos16',
+  'amida',
 ]
 
 export const MODE_LABELS: Record<Mode, string> = {
@@ -23,6 +29,7 @@ export const MODE_LABELS: Record<Mode, string> = {
   aster: 'Aster',
   box: 'ダイス',
   pos16: '16² pos',
+  amida: 'あみだ',
 }
 
 export const DEFAULT_STATE: AppState = {
@@ -35,6 +42,7 @@ export const DEFAULT_STATE: AppState = {
   asterFillColor: 'run',
   asterCross: true,
   boxEdgeColor: 'single',
+  amidaRailMode: 'normal',
   notationStyle: 'default',
   monochrome: false,
   emphasizeSingleBit: false,
@@ -122,6 +130,15 @@ export const BOX_EDGE_COLORS: Array<{
   { value: 'angle', label: '45°' },
   { value: 'xy', label: '位置(xy)' },
   { value: 'grad', label: 'グラデ' },
+]
+
+export const AMIDA_RAIL_MODES: Array<{
+  value: AmidaRailMode
+  label: string
+}> = [
+  { value: 'normal', label: '通常色' },
+  { value: 'colored', label: '別色' },
+  { value: 'hidden', label: '非表示' },
 ]
 
 export const ASTER_FILL_MODES: Array<{

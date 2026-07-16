@@ -1,4 +1,6 @@
 import {
+  amidaNotation,
+  amidaSvg,
   asterNotation,
   asterSvg,
   boxNotation,
@@ -29,6 +31,7 @@ export type PatternRenderOptions = Pick<
   | 'asterFillColor'
   | 'asterCross'
   | 'boxEdgeColor'
+  | 'amidaRailMode'
   | 'monochrome'
   | 'pos16ShowLine'
   | 'pos16ShowNeighborhood'
@@ -123,5 +126,15 @@ export function renderPattern(
       }
     case 'pos16':
       return renderPos16(index, size, options)
+    case 'amida':
+      return {
+        graphic: amidaSvg(
+          index,
+          size,
+          options.monochrome,
+          options.amidaRailMode,
+        ),
+        note: amidaNotation(index),
+      }
   }
 }

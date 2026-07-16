@@ -38,6 +38,7 @@ export default function App() {
           asterFillColor={state.asterFillColor}
           asterCross={state.asterCross}
           boxEdgeColor={state.boxEdgeColor}
+          amidaRailMode={state.amidaRailMode}
           notationStyle={state.notationStyle}
           monochrome={state.monochrome}
           emphasizeSingleBit={state.emphasizeSingleBit}

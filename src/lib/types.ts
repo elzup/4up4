@@ -7,11 +7,13 @@ export type Mode =
   | 'aster'
   | 'box'
   | 'pos16'
+  | 'amida'
 
 export type PolygonVariant = 'normal' | 'rhombus' | 'inverse'
 export type AsterFillMode = 'none' | 'alpha' | 'solid'
 export type AsterFillColor = 'segment' | 'run'
 export type BoxEdgeColor = 'single' | 'angle' | 'xy' | 'grad'
+export type AmidaRailMode = 'normal' | 'colored' | 'hidden'
 export type NotationStyle = 'default' | 'bin' | 'hex' | 'bar' | 'dot'
 
 export interface PatternState {
@@ -31,6 +33,7 @@ export interface AppState {
   asterFillColor: AsterFillColor
   asterCross: boolean
   boxEdgeColor: BoxEdgeColor
+  amidaRailMode: AmidaRailMode
   notationStyle: NotationStyle
   monochrome: boolean
   emphasizeSingleBit: boolean

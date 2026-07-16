@@ -1,4 +1,10 @@
-import type { AppState, Mode, PatternState, PolygonVariant } from './types'
+import type {
+  AmidaRailMode,
+  AppState,
+  Mode,
+  PatternState,
+  PolygonVariant,
+} from './types'
 import { POS16_OPTIONS_VERSION } from './constants'
 
 export function popcount(n: number): number {
@@ -41,6 +47,7 @@ export function isValidMode(value: unknown): value is Mode {
       'aster',
       'box',
       'pos16',
+      'amida',
     ].includes(
       value,
     )
@@ -53,6 +60,13 @@ export function isValidPolygonVariant(
   return (
     typeof value === 'string' &&
     ['normal', 'rhombus', 'inverse'].includes(value)
+  )
+}
+
+function isValidAmidaRailMode(value: unknown): value is AmidaRailMode {
+  return (
+    typeof value === 'string' &&
+    ['normal', 'colored', 'hidden'].includes(value)
   )
 }
 
@@ -75,6 +89,8 @@ export function loadState(partial: unknown): Partial<AppState> {
   if (typeof s.asterCross === 'boolean') result.asterCross = s.asterCross
   if (typeof s.boxEdgeColor === 'string')
     result.boxEdgeColor = s.boxEdgeColor as AppState['boxEdgeColor']
+  if (isValidAmidaRailMode(s.amidaRailMode))
+    result.amidaRailMode = s.amidaRailMode
   if (typeof s.notationStyle === 'string')
     result.notationStyle = s.notationStyle as AppState['notationStyle']
   if (typeof s.monochrome === 'boolean') result.monochrome = s.monochrome

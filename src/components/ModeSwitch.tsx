@@ -61,6 +61,14 @@ export function ModeSwitch({ currentMode, onChange }: ModeSwitchProps) {
       >
         {MODE_LABELS.pos16}
       </button>
+      <span className="mode-separator" />
+      <button
+        type="button"
+        className={currentMode === 'amida' ? 'active' : ''}
+        onClick={() => onChange('amida')}
+      >
+        {MODE_LABELS.amida}
+      </button>
     </div>
   )
 }

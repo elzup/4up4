@@ -1,4 +1,5 @@
 import {
+  AMIDA_RAIL_MODES,
   ASTER_FILL_COLORS,
   ASTER_FILL_MODES,
   BOX_EDGE_COLORS,
@@ -17,6 +18,7 @@ interface OptionsPanelProps {
   asterFillColor: AppState['asterFillColor']
   asterCross: boolean
   boxEdgeColor: AppState['boxEdgeColor']
+  amidaRailMode: AppState['amidaRailMode']
   pos16ShowLine: boolean
   pos16ShowNeighborhood: boolean
   pos16ShowBoundary: boolean
@@ -27,6 +29,7 @@ interface OptionsPanelProps {
   onAsterFillColorChange: (value: AppState['asterFillColor']) => void
   onAsterCrossChange: (value: boolean) => void
   onBoxEdgeColorChange: (value: AppState['boxEdgeColor']) => void
+  onAmidaRailModeChange: (value: AppState['amidaRailMode']) => void
   onPos16ShowLineChange: (value: boolean) => void
   onPos16ShowNeighborhoodChange: (value: boolean) => void
   onPos16ShowBoundaryChange: (value: boolean) => void
@@ -191,6 +194,27 @@ export function OptionsPanel(props: OptionsPanelProps) {
           />
           <span>塗り領域の境界線を表示</span>
         </label>
+      </div>
+
+      <div
+        className={`path-options ${props.currentMode === 'amida' ? 'visible' : ''}`}
+      >
+        <span className="select-label">独立した縦棒</span>
+        <div className="radio-group">
+          {AMIDA_RAIL_MODES.map(({ value, label }) => (
+            <span key={value}>
+              <input
+                type="radio"
+                name="amidaRailMode"
+                id={`amidaRailMode-${value}`}
+                value={value}
+                checked={props.amidaRailMode === value}
+                onChange={() => props.onAmidaRailModeChange(value)}
+              />
+              <label htmlFor={`amidaRailMode-${value}`}>{label}</label>
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   )
