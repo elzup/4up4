@@ -29,6 +29,12 @@ export function boxCornerCode(index: number, k: number): number {
   return (index >> (6 - k * 2)) & 3
 }
 
+export function normalizeSamplingPageBits(bits: number[]): number[] {
+  return [...new Set(bits)]
+    .filter((bit) => Number.isInteger(bit) && bit >= 0 && bit <= 7)
+    .sort((a, b) => b - a)
+}
+
 export function isValidMode(value: unknown): value is Mode {
   return (
     typeof value === 'string' &&
@@ -91,6 +97,17 @@ export function loadState(partial: unknown): Partial<AppState> {
   }
   if (Number.isInteger(s.selectedIndex))
     result.selectedIndex = s.selectedIndex as number
+  if (
+    Array.isArray(s.samplingPageBits) &&
+    s.samplingPageBits.every(
+      (bit): bit is number => Number.isInteger(bit) && bit >= 0 && bit <= 7,
+    )
+  ) {
+    result.samplingPageBits = normalizeSamplingPageBits(s.samplingPageBits)
+  }
+  if (Number.isInteger(s.samplingPage) && (s.samplingPage as number) >= 0) {
+    result.samplingPage = s.samplingPage as number
+  }
 
   return result
 }
