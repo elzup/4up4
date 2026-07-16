@@ -46,6 +46,8 @@ const SYMBOL_SETS = [
 ]
 
 const MARUBATSU_SYMBOL_SET = 3
+const CIRCLE_BITS = [1, 2, 2, 1] as const
+const CROSS_BITS = [2, 1, 1, 2] as const
 
 export function symbolGridHtml(
   state: PatternState,
@@ -83,8 +85,8 @@ function renderMarubatsu(
   const idBase = `marubatsu-${values.join('')}-${size}`
   const circleClipId = `${idBase}-circle`
   const crossClipId = `${idBase}-cross`
-  const circleRects = renderQuadrantRects(values, size, 1)
-  const crossRects = renderQuadrantRects(values, size, 2)
+  const circleRects = renderQuadrantRects(values, size, CIRCLE_BITS)
+  const crossRects = renderQuadrantRects(values, size, CROSS_BITS)
   const definitions = `${renderClipPath(
     circleClipId,
     circleRects,
@@ -112,12 +114,12 @@ function renderMarubatsu(
 function renderQuadrantRects(
   values: number[],
   size: number,
-  bit: 1 | 2,
+  quadrantBits: readonly [number, number, number, number],
 ): string {
   const cellSize = size / 2
   return values
     .map((value, index) => {
-      if ((value & bit) === 0) return ''
+      if ((value & quadrantBits[index]) === 0) return ''
       const x = (index % 2) * cellSize
       const y = Math.floor(index / 2) * cellSize
       return `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}"/>`

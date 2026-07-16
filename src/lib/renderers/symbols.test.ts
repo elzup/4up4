@@ -35,9 +35,9 @@ describe('symbolGridHtml', () => {
     expect(svg.match(/<line/g)).toHaveLength(2)
   })
 
-  it('maps 01 to the large circle and 10 to the large cross', () => {
-    const circle = symbolGridHtml({ a: 1, b: 1, c: 1, d: 1 }, 3, 40)
-    const cross = symbolGridHtml({ a: 2, b: 2, c: 2, d: 2 }, 3, 40)
+  it('maps 01101001 to the large circle and 10010110 to the large cross', () => {
+    const circle = symbolGridHtml({ a: 1, b: 2, c: 2, d: 1 }, 3, 40)
+    const cross = symbolGridHtml({ a: 2, b: 1, c: 1, d: 2 }, 3, 40)
     expect(circle).toContain('data-marubatsu="circle"')
     expect(circle).not.toContain('data-marubatsu="cross"')
     expect(cross).not.toContain('data-marubatsu="circle"')
@@ -82,13 +82,15 @@ describe('renderSymbolPreview', () => {
     }
   })
 
-  it('previews marubatsu values as circle, cross, and their overlay', () => {
+  it('previews marubatsu values as quadrant-dependent fragments', () => {
+    const empty = renderSymbolPreview(0, 3)
     const circle = renderSymbolPreview(1, 3)
     const cross = renderSymbolPreview(2, 3)
     const overlay = renderSymbolPreview(3, 3)
+    expect(empty).not.toContain('data-marubatsu')
     expect(circle).toContain('data-marubatsu="circle"')
-    expect(circle).not.toContain('data-marubatsu="cross"')
-    expect(cross).not.toContain('data-marubatsu="circle"')
+    expect(circle).toContain('data-marubatsu="cross"')
+    expect(cross).toContain('data-marubatsu="circle"')
     expect(cross).toContain('data-marubatsu="cross"')
     expect(overlay).toContain('data-marubatsu="circle"')
     expect(overlay).toContain('data-marubatsu="cross"')
