@@ -10,7 +10,7 @@ afterEach(() => {
 describe('usePersistentState', () => {
   it('initializes with default state', () => {
     const { result } = renderHook(() => usePersistentState())
-    expect(result.current[0].currentMode).toBe('edges')
+    expect(result.current[0].currentMode).toBe('pos16')
     expect(result.current[0].selectedIndex).toBe(0)
   })
 
@@ -68,6 +68,6 @@ describe('usePersistentState', () => {
   it('ignores corrupted localStorage data', () => {
     localStorage.setItem(STORAGE_KEY, 'not-json')
     const { result } = renderHook(() => usePersistentState())
-    expect(result.current[0].currentMode).toBe('edges')
+    expect(result.current[0].currentMode).toBe('pos16')
   })
 })

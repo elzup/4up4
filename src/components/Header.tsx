@@ -19,7 +19,7 @@ export function Header(props: HeaderProps) {
       <div>
         <h1>fupf glyph</h1>
         <div className="desc">
-          4要素 × 2bit = 8bit = 256通りのパターン図形を、ボーダー、タイル、ポリゴン、4隅パス、丸点+線、Aster、ダイスで表現します。
+          4要素 × 2bit = 8bit = 256通りのパターン図形を、ボーダー、タイル、ポリゴン、4隅パス、丸点+線、Aster、ダイス、16² posで表現します。
         </div>
       </div>
       <div className="header-right">

@@ -12,11 +12,15 @@ describe('App', () => {
     render(<App />)
     expect(screen.getByText('fupf glyph')).toBeInTheDocument()
     expect(screen.getByText('選択中のパターン')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '16² pos' })).toHaveClass(
+      'active',
+    )
     expect(document.querySelectorAll('.cell').length).toBe(256)
   })
 
   it('selects a cell on click', () => {
     render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'ボーダー' }))
     const cell = document.getElementById('cell-42')
     expect(cell).not.toBeNull()
     fireEvent.click(cell!)
@@ -38,10 +42,9 @@ describe('App', () => {
     expect(screen.getByLabelText('なし / \\ X')).toBeInTheDocument()
   })
 
-  it('switches to pos16 mode', () => {
+  it('uses boundary-only pos16 as the default', () => {
     render(<App />)
     const pos16Button = screen.getByRole('button', { name: '16² pos' })
-    fireEvent.click(pos16Button)
     expect(pos16Button).toHaveClass('active')
     expect(screen.getByLabelText('接続線を表示')).not.toBeChecked()
     expect(screen.getByLabelText('9近傍を塗る')).not.toBeChecked()

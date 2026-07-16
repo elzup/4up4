@@ -26,7 +26,7 @@ export const MODE_LABELS: Record<Mode, string> = {
 }
 
 export const DEFAULT_STATE: AppState = {
-  currentMode: 'edges',
+  currentMode: 'pos16',
   selectedIndex: 0,
   currentSymbolSet: 0,
   highlightDuplicates: false,

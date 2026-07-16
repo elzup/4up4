@@ -132,6 +132,57 @@ aside h2 {
   letter-spacing: 0.05em;
 }
 
+.clock-demo {
+  position: absolute;
+  z-index: 10;
+  top: 8px;
+  right: 10px;
+  padding: 4px;
+  background: rgb(24 24 27 / 88%);
+  border: 1px solid var(--grid-line);
+  border-radius: 7px;
+  backdrop-filter: blur(8px);
+}
+
+.clock-face {
+  display: flex;
+  gap: 3px;
+}
+
+.clock-item {
+  width: 22px;
+  margin: 0;
+}
+
+.clock-glyph {
+  width: 22px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--grid-line);
+  border-radius: 4px;
+}
+
+.clock-glyph svg {
+  width: 88%;
+  height: 88%;
+}
+
+.clock-item figcaption {
+  margin-top: 1px;
+  text-align: center;
+}
+
+.clock-value {
+  color: var(--text);
+  font-size: 0.55rem;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
 .preview-box {
   width: 100%;
   aspect-ratio: 1;

@@ -1,6 +1,7 @@
 import { Header } from './components/Header'
 import { Sidebar } from './components/Sidebar'
 import { Grid } from './components/Grid'
+import { ClockDemo } from './components/ClockDemo'
 import { usePersistentState } from './hooks/usePersistentState'
 import type { AppState } from './lib/types'
 
@@ -25,6 +26,7 @@ export default function App() {
           handleUpdate({ emphasizeSingleBit: value })
         }
       />
+      <ClockDemo state={state} />
       <main>
         <Sidebar state={state} onUpdate={handleUpdate} />
         <Grid
