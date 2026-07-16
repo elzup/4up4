@@ -25,6 +25,7 @@ interface GridCellProps {
   pos16ShowBoundary: boolean
   selectedIndex: number
   onSelect: (index: number) => void
+  useMatrixLayout?: boolean
 }
 
 export function GridCell(props: GridCellProps) {
@@ -42,10 +43,14 @@ export function GridCell(props: GridCellProps) {
     <div
       className={className}
       id={`cell-${props.index}`}
-      style={{
-        gridColumn: (props.index % 16) + 3,
-        gridRow: Math.floor(props.index / 16) + 3,
-      }}
+      style={
+        !props.useMatrixLayout
+          ? undefined
+          : {
+              gridColumn: (props.index % 16) + 3,
+              gridRow: Math.floor(props.index / 16) + 3,
+            }
+      }
       onClick={() => props.onSelect(props.index)}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{

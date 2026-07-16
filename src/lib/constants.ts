@@ -35,6 +35,8 @@ export const MODE_LABELS: Record<Mode, string> = {
 export const DEFAULT_STATE: AppState = {
   currentMode: 'pos16',
   selectedIndex: 0,
+  samplingPageBits: [],
+  samplingPage: 0,
   currentSymbolSet: 0,
   highlightDuplicates: false,
   polygonVariant: 'normal',

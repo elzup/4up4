@@ -7,10 +7,12 @@ import {
   POLYGON_VARIANTS,
   SYMBOL_SET_LABELS,
 } from '../lib/constants'
+import { normalizeSamplingPageBits } from '../lib/state'
 import type { AppState, Mode } from '../lib/types'
 
 interface OptionsPanelProps {
   currentMode: Mode
+  samplingPageBits: number[]
   currentSymbolSet: number
   highlightDuplicates: boolean
   polygonVariant: AppState['polygonVariant']
@@ -33,11 +35,36 @@ interface OptionsPanelProps {
   onPos16ShowLineChange: (value: boolean) => void
   onPos16ShowNeighborhoodChange: (value: boolean) => void
   onPos16ShowBoundaryChange: (value: boolean) => void
+  onSamplingPageBitsChange: (value: number[]) => void
 }
 
 export function OptionsPanel(props: OptionsPanelProps) {
+  const bits = [7, 6, 5, 4, 3, 2, 1, 0]
+  const togglePagingBit = (bit: number, checked: boolean) => {
+    const next = checked
+      ? [...props.samplingPageBits, bit]
+      : props.samplingPageBits.filter((value) => value !== bit)
+    props.onSamplingPageBitsChange(normalizeSamplingPageBits(next))
+  }
+
   return (
     <div className="options-area">
+      <div className="path-options visible">
+        <span className="select-label">グリッドサンプリング（ページングビット）</span>
+        <div className="bit-toggle-group">
+          {bits.map((bit) => (
+            <label key={bit} className="toggle-inline">
+              <input
+                type="checkbox"
+                checked={props.samplingPageBits.includes(bit)}
+                onChange={(event) => togglePagingBit(bit, event.target.checked)}
+              />
+              <span>{`bit${bit}`}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       <div
         className={`path-options ${props.currentMode === 'path' ? 'visible' : ''}`}
       >

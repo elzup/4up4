@@ -26,6 +26,8 @@ export interface PatternState {
 export interface AppState {
   currentMode: Mode
   selectedIndex: number
+  samplingPageBits: number[]
+  samplingPage: number
   currentSymbolSet: number
   highlightDuplicates: boolean
   polygonVariant: PolygonVariant

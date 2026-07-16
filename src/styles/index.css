@@ -288,6 +288,24 @@ aside h2 {
   gap: 6px;
 }
 
+.bit-toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toggle-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--grid-line);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
 .radio-group input {
   position: absolute;
   opacity: 0;
@@ -347,6 +365,39 @@ aside h2 {
   grid-template-columns: auto auto repeat(16, 1fr);
   grid-template-rows: auto auto repeat(16, 1fr);
   gap: 6px;
+}
+
+.grid-sampling {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+}
+
+.grid-pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.grid-pager button {
+  background: var(--panel);
+  border: 1px solid var(--grid-line);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.grid-pager button:hover {
+  border-color: var(--accent);
+}
+
+.grid-pager-note {
+  color: var(--muted);
+  font-size: 0.75rem;
 }
 
 .grid-header {

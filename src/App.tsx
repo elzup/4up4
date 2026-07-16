@@ -45,8 +45,11 @@ export default function App() {
           pos16ShowLine={state.pos16ShowLine}
           pos16ShowNeighborhood={state.pos16ShowNeighborhood}
           pos16ShowBoundary={state.pos16ShowBoundary}
+          samplingPageBits={state.samplingPageBits}
+          samplingPage={state.samplingPage}
           selectedIndex={state.selectedIndex}
           onSelect={(index) => handleUpdate({ selectedIndex: index })}
+          onSamplingPageChange={(page) => handleUpdate({ samplingPage: page })}
         />
       </main>
     </>
