@@ -50,7 +50,8 @@ h1 {
 
 .mode-switch {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   background: var(--panel);
   padding: 4px;
@@ -70,20 +71,19 @@ h1 {
   margin: 0;
 }
 
-.mode-switch button {
+.mode-choice {
   display: flex;
-  min-width: 52px;
-  min-height: 58px;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
   gap: 4px;
+}
+
+.mode-select-button {
   background: transparent;
   border: none;
   color: var(--muted);
   font-family: inherit;
   font-size: 0.8rem;
-  padding: 5px 8px 6px;
+  padding: 6px 7px;
   border-radius: 6px;
   cursor: pointer;
   transition: 0.15s;
@@ -92,7 +92,7 @@ h1 {
 
 .mode-samples {
   display: flex;
-  min-height: 26px;
+  min-height: 28px;
   align-items: center;
   justify-content: center;
   gap: 2px;
@@ -107,11 +107,22 @@ h1 {
   width: 22px;
   height: 22px;
   flex: 0 0 auto;
+  padding: 1px;
+  background: #18181b;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 120ms ease;
 }
 
 .mode-samples[data-sample-count='2'] .mode-sample {
   width: 18px;
   height: 18px;
+}
+
+.mode-samples[data-sample-count='3'] .mode-sample {
+  width: 15px;
+  height: 15px;
 }
 
 .mode-samples[data-sample-count='4'] .mode-sample {
@@ -125,14 +136,25 @@ h1 {
   height: 100%;
 }
 
-.mode-switch button:hover {
+.mode-select-button:hover {
   color: var(--text);
 }
 
-.mode-switch button.active {
+.mode-select-button.active {
   background: var(--accent);
   color: #0f0f11;
   font-weight: 600;
+}
+
+.mode-sample:hover {
+  border-color: var(--accent);
+  background: #27272a;
+  transform: translateY(-1px);
+}
+
+.mode-sample:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .mode-switch .mode-separator {
@@ -144,6 +166,7 @@ h1 {
 
 .mode-group {
   display: flex;
+  align-items: center;
   gap: 4px;
   background: var(--bg);
   padding: 3px;
@@ -623,8 +646,8 @@ aside h2 {
   .notation {
     font-size: 0.45rem;
   }
-  .mode-switch button {
-    padding: 8px 10px;
+  .mode-select-button {
+    padding: 6px;
     font-size: 0.75rem;
   }
 }

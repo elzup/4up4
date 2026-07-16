@@ -20,6 +20,9 @@ export default function App() {
         monochrome={state.monochrome}
         emphasizeSingleBit={state.emphasizeSingleBit}
         onModeChange={(mode) => handleUpdate({ currentMode: mode })}
+        onModePresetChange={(mode, preset) =>
+          handleUpdate({ currentMode: mode, ...preset })
+        }
         onNotationChange={(value) => handleUpdate({ notationStyle: value })}
         onMonochromeChange={(value) => handleUpdate({ monochrome: value })}
         onEmphasizeSingleBitChange={(value) =>

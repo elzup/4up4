@@ -19,13 +19,25 @@ describe('App', () => {
     expect(screen.getByLabelText('bit7')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: '前ページ' })).toBeNull()
     expect(screen.queryByRole('button', { name: '次ページ' })).toBeNull()
-    expect(document.querySelectorAll('.mode-sample')).toHaveLength(13)
+    expect(document.querySelectorAll('.mode-sample')).toHaveLength(17)
     expect(
       document.querySelectorAll('.mode-sample[data-mode="symbols"]'),
     ).toHaveLength(4)
     expect(
       document.querySelectorAll('.mode-sample[data-mode="triSplit"]'),
     ).toHaveLength(2)
+    expect(
+      document.querySelectorAll('.mode-sample[data-mode="aster"]'),
+    ).toHaveLength(3)
+    expect(
+      document.querySelectorAll('.mode-sample[data-mode="box"]'),
+    ).toHaveLength(2)
+    expect(
+      document.querySelectorAll('.mode-sample[data-mode="pos16"]'),
+    ).toHaveLength(2)
+    expect(
+      document.querySelector('.mode-sample[data-mode="aster"]'),
+    ).toHaveAttribute('data-pattern-index', '122')
     expect(document.querySelector('.mode-sample')).toHaveAttribute(
       'data-pattern-index',
       '99',
@@ -48,6 +60,19 @@ describe('App', () => {
     const asterButton = screen.getByRole('button', { name: 'Aster' })
     fireEvent.click(asterButton)
     expect(asterButton).toHaveClass('active')
+  })
+
+  it('applies a mode sample option preset', () => {
+    render(<App />)
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'ポリゴン: ひし形' }),
+    )
+
+    expect(screen.getByRole('button', { name: 'ポリゴン' })).toHaveClass(
+      'active',
+    )
+    expect(screen.getByLabelText('ひし形')).toBeChecked()
   })
 
   it('switches to amida mode', () => {

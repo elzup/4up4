@@ -1,5 +1,6 @@
 import { ModeSwitch } from './ModeSwitch'
 import { NotationSwitch } from './NotationSwitch'
+import type { ModeSamplePreset } from '../lib/modeSamples'
 import type { Mode, NotationStyle } from '../lib/types'
 
 interface HeaderProps {
@@ -8,6 +9,7 @@ interface HeaderProps {
   monochrome: boolean
   emphasizeSingleBit: boolean
   onModeChange: (mode: Mode) => void
+  onModePresetChange: (mode: Mode, preset: ModeSamplePreset) => void
   onNotationChange: (value: NotationStyle) => void
   onMonochromeChange: (value: boolean) => void
   onEmphasizeSingleBitChange: (value: boolean) => void
@@ -26,6 +28,7 @@ export function Header(props: HeaderProps) {
         <ModeSwitch
           currentMode={props.currentMode}
           onChange={props.onModeChange}
+          onPresetSelect={props.onModePresetChange}
         />
         <NotationSwitch
           notationStyle={props.notationStyle}
