@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="16 squared pos 0101 to 1100">
+  <rect width="512" height="512" rx="88" fill="#0f0f11"/>
+  <g fill="#18181b" stroke="#3f3f46" stroke-width="5">
+    <rect x="104" y="104" width="64" height="64" rx="11"/><rect x="184" y="104" width="64" height="64" rx="11"/><rect x="264" y="104" width="64" height="64" rx="11"/><rect x="344" y="104" width="64" height="64" rx="11"/>
+    <rect x="104" y="184" width="64" height="64" rx="11"/><rect x="184" y="184" width="64" height="64" rx="11"/><rect x="264" y="184" width="64" height="64" rx="11"/><rect x="344" y="184" width="64" height="64" rx="11"/>
+    <rect x="104" y="264" width="64" height="64" rx="11"/><rect x="184" y="264" width="64" height="64" rx="11"/><rect x="264" y="264" width="64" height="64" rx="11"/><rect x="344" y="264" width="64" height="64" rx="11"/>
+    <rect x="104" y="344" width="64" height="64" rx="11"/><rect x="184" y="344" width="64" height="64" rx="11"/><rect x="264" y="344" width="64" height="64" rx="11"/><rect x="344" y="344" width="64" height="64" rx="11"/>
+  </g>
+  <path d="M96 96H336V336H256V416H96Z" fill="none" stroke="#22d3ee" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#a1a1aa">
+    <circle cx="136" cy="136" r="5"/><circle cx="216" cy="136" r="5"/><circle cx="296" cy="136" r="5"/><circle cx="376" cy="136" r="5"/>
+    <circle cx="136" cy="216" r="5"/><circle cx="296" cy="216" r="5"/><circle cx="376" cy="216" r="5"/>
+    <circle cx="136" cy="296" r="5"/><circle cx="216" cy="296" r="5"/><circle cx="296" cy="296" r="5"/><circle cx="376" cy="296" r="5"/>
+    <circle cx="216" cy="376" r="5"/><circle cx="296" cy="376" r="5"/><circle cx="376" cy="376" r="5"/>
+  </g>
+  <circle cx="216" cy="216" r="24" fill="none" stroke="#22d3ee" stroke-width="12"/>
+  <circle cx="216" cy="216" r="8" fill="#22d3ee"/>
+  <circle cx="136" cy="376" r="20" fill="#22d3ee"/>
+</svg>
