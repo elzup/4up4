@@ -37,6 +37,9 @@ export const DEFAULT_STATE: AppState = {
   notationStyle: 'default',
   monochrome: false,
   emphasizeSingleBit: false,
+  pos16ShowLine: true,
+  pos16ShowNeighborhood: true,
+  pos16ShowBoundary: false,
 }
 
 // Aster 8方向の配色（上から時計回りの色相環）

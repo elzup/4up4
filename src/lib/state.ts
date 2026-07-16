@@ -79,6 +79,12 @@ export function loadState(partial: unknown): Partial<AppState> {
   if (typeof s.monochrome === 'boolean') result.monochrome = s.monochrome
   if (typeof s.emphasizeSingleBit === 'boolean')
     result.emphasizeSingleBit = s.emphasizeSingleBit
+  if (typeof s.pos16ShowLine === 'boolean')
+    result.pos16ShowLine = s.pos16ShowLine
+  if (typeof s.pos16ShowNeighborhood === 'boolean')
+    result.pos16ShowNeighborhood = s.pos16ShowNeighborhood
+  if (typeof s.pos16ShowBoundary === 'boolean')
+    result.pos16ShowBoundary = s.pos16ShowBoundary
   if (Number.isInteger(s.selectedIndex))
     result.selectedIndex = s.selectedIndex as number
 

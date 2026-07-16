@@ -35,6 +35,9 @@ interface PreviewProps {
   boxEdgeColor: AppState['boxEdgeColor']
   notationStyle: AppState['notationStyle']
   monochrome: boolean
+  pos16ShowLine: boolean
+  pos16ShowNeighborhood: boolean
+  pos16ShowBoundary: boolean
 }
 
 export function Preview(props: PreviewProps) {
@@ -128,7 +131,12 @@ export function Preview(props: PreviewProps) {
       }
       break
     case 'pos16':
-      graphic = pos16Svg(props.selectedIndex, 160, props.monochrome)
+      graphic = pos16Svg(props.selectedIndex, 160, {
+        monochrome: props.monochrome,
+        showLine: props.pos16ShowLine,
+        showNeighborhood: props.pos16ShowNeighborhood,
+        showBoundary: props.pos16ShowBoundary,
+      })
       note = pos16Notation(props.selectedIndex)
       label = '4x4 位置→位置'
       detail = pos16Detail(props.selectedIndex)

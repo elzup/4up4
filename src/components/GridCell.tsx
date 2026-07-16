@@ -34,6 +34,9 @@ interface GridCellProps {
   notationStyle: AppState['notationStyle']
   monochrome: boolean
   emphasizeSingleBit: boolean
+  pos16ShowLine: boolean
+  pos16ShowNeighborhood: boolean
+  pos16ShowBoundary: boolean
   selectedIndex: number
   onSelect: (index: number) => void
 }
@@ -87,7 +90,12 @@ export function GridCell(props: GridCellProps) {
       note = triSplitNotation(props.index)
       break
     case 'pos16':
-      graphic = pos16Svg(props.index, 40, props.monochrome)
+      graphic = pos16Svg(props.index, 40, {
+        monochrome: props.monochrome,
+        showLine: props.pos16ShowLine,
+        showNeighborhood: props.pos16ShowNeighborhood,
+        showBoundary: props.pos16ShowBoundary,
+      })
       note = pos16Notation(props.index)
       break
     default:

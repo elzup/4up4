@@ -39,6 +39,9 @@ export default function App() {
           notationStyle={state.notationStyle}
           monochrome={state.monochrome}
           emphasizeSingleBit={state.emphasizeSingleBit}
+          pos16ShowLine={state.pos16ShowLine}
+          pos16ShowNeighborhood={state.pos16ShowNeighborhood}
+          pos16ShowBoundary={state.pos16ShowBoundary}
           selectedIndex={state.selectedIndex}
           onSelect={(index) => handleUpdate({ selectedIndex: index })}
         />

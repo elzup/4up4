@@ -14,6 +14,9 @@ interface GridProps {
   notationStyle: AppState['notationStyle']
   monochrome: boolean
   emphasizeSingleBit: boolean
+  pos16ShowLine: boolean
+  pos16ShowNeighborhood: boolean
+  pos16ShowBoundary: boolean
   selectedIndex: number
   onSelect: (index: number) => void
 }

@@ -20,8 +20,17 @@ describe('pos16Svg', () => {
 
   it('renders directed line with arrow', () => {
     const svg = pos16Svg(0b00010010, 40)
+    expect(svg).toContain('data-pos16-line="true"')
     expect(svg).toContain('<line')
     expect(svg).toContain('<polygon')
+  })
+
+  it('hides the connecting line while keeping position markers', () => {
+    const svg = pos16Svg(0b00010010, 40, { showLine: false })
+    expect(svg).not.toContain('data-pos16-line="true"')
+    expect(svg).not.toContain('<line')
+    expect(svg).not.toContain('<polygon')
+    expect(svg).toContain('<circle')
   })
 
   it('renders loop marker when start equals end', () => {
@@ -31,7 +40,7 @@ describe('pos16Svg', () => {
   })
 
   it('uses monochrome palette when enabled', () => {
-    const svg = pos16Svg(0b00010010, 40, true)
+    const svg = pos16Svg(0b00010010, 40, { monochrome: true })
     expect(svg).toContain('#e4e4e7')
     expect(svg).not.toContain('#22d3ee')
   })
@@ -50,6 +59,33 @@ describe('pos16Svg', () => {
     expect(svg).toContain('#18181b')
     expect(svg).toContain('#52525b')
     expect(svg).toContain('#a1a1aa')
+    expect(svg).toContain('data-pos16-neighborhood="true"')
+  })
+
+  it('can hide the 3x3 neighborhood fill', () => {
+    const svg = pos16Svg(0b01011010, 40, { showNeighborhood: false })
+    expect(svg).not.toContain('data-pos16-neighborhood="true"')
+    expect(svg).not.toContain('#52525b')
+  })
+
+  it('draws the boundary of the neighborhood union when enabled', () => {
+    const svg = pos16Svg(0b01011010, 40, { showBoundary: true })
+    expect(svg).toContain('data-pos16-boundary="true"')
+  })
+
+  it('omits internal borders between adjacent neighborhood cells', () => {
+    const svg = pos16Svg(0b01010101, 40, { showBoundary: true })
+    const boundary = svg.match(/data-pos16-boundary="true" d="([^"]+)"/)
+    expect(boundary?.[1].match(/M/g)).toHaveLength(12)
+  })
+
+  it('can show the neighborhood boundary without its fill', () => {
+    const svg = pos16Svg(0b01011010, 40, {
+      showNeighborhood: false,
+      showBoundary: true,
+    })
+    expect(svg).not.toContain('data-pos16-neighborhood="true"')
+    expect(svg).toContain('data-pos16-boundary="true"')
   })
 })
 

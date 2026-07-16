@@ -34,6 +34,9 @@ export interface AppState {
   notationStyle: NotationStyle
   monochrome: boolean
   emphasizeSingleBit: boolean
+  pos16ShowLine: boolean
+  pos16ShowNeighborhood: boolean
+  pos16ShowBoundary: boolean
 }
 
 export interface SvgResult {

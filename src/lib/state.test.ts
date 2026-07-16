@@ -94,6 +94,9 @@ describe('loadState', () => {
       notationStyle: 'dot',
       monochrome: true,
       emphasizeSingleBit: true,
+      pos16ShowLine: false,
+      pos16ShowNeighborhood: false,
+      pos16ShowBoundary: true,
     }
     expect(loadState(input)).toEqual(input)
   })

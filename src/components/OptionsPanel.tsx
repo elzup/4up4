@@ -17,6 +17,9 @@ interface OptionsPanelProps {
   asterFillColor: AppState['asterFillColor']
   asterCross: boolean
   boxEdgeColor: AppState['boxEdgeColor']
+  pos16ShowLine: boolean
+  pos16ShowNeighborhood: boolean
+  pos16ShowBoundary: boolean
   onSymbolSetChange: (value: number) => void
   onHighlightDuplicatesChange: (value: boolean) => void
   onPolygonVariantChange: (value: AppState['polygonVariant']) => void
@@ -24,6 +27,9 @@ interface OptionsPanelProps {
   onAsterFillColorChange: (value: AppState['asterFillColor']) => void
   onAsterCrossChange: (value: boolean) => void
   onBoxEdgeColorChange: (value: AppState['boxEdgeColor']) => void
+  onPos16ShowLineChange: (value: boolean) => void
+  onPos16ShowNeighborhoodChange: (value: boolean) => void
+  onPos16ShowBoundaryChange: (value: boolean) => void
 }
 
 export function OptionsPanel(props: OptionsPanelProps) {
@@ -150,6 +156,41 @@ export function OptionsPanel(props: OptionsPanelProps) {
             </span>
           ))}
         </div>
+      </div>
+
+      <div
+        className={`path-options ${props.currentMode === 'pos16' ? 'visible' : ''}`}
+      >
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={props.pos16ShowLine}
+            onChange={(event) =>
+              props.onPos16ShowLineChange(event.target.checked)
+            }
+          />
+          <span>接続線を表示</span>
+        </label>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={props.pos16ShowNeighborhood}
+            onChange={(event) =>
+              props.onPos16ShowNeighborhoodChange(event.target.checked)
+            }
+          />
+          <span>9近傍を塗る</span>
+        </label>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={props.pos16ShowBoundary}
+            onChange={(event) =>
+              props.onPos16ShowBoundaryChange(event.target.checked)
+            }
+          />
+          <span>塗り領域の境界線を表示</span>
+        </label>
       </div>
     </div>
   )

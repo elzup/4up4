@@ -24,6 +24,9 @@ export function Sidebar({ state, onUpdate }: SidebarProps) {
         boxEdgeColor={state.boxEdgeColor}
         notationStyle={state.notationStyle}
         monochrome={state.monochrome}
+        pos16ShowLine={state.pos16ShowLine}
+        pos16ShowNeighborhood={state.pos16ShowNeighborhood}
+        pos16ShowBoundary={state.pos16ShowBoundary}
       />
       <OptionsPanel
         currentMode={state.currentMode}
@@ -34,6 +37,9 @@ export function Sidebar({ state, onUpdate }: SidebarProps) {
         asterFillColor={state.asterFillColor}
         asterCross={state.asterCross}
         boxEdgeColor={state.boxEdgeColor}
+        pos16ShowLine={state.pos16ShowLine}
+        pos16ShowNeighborhood={state.pos16ShowNeighborhood}
+        pos16ShowBoundary={state.pos16ShowBoundary}
         onSymbolSetChange={(value) => onUpdate({ currentSymbolSet: value })}
         onHighlightDuplicatesChange={(value) =>
           onUpdate({ highlightDuplicates: value })
@@ -43,6 +49,13 @@ export function Sidebar({ state, onUpdate }: SidebarProps) {
         onAsterFillColorChange={(value) => onUpdate({ asterFillColor: value })}
         onAsterCrossChange={(value) => onUpdate({ asterCross: value })}
         onBoxEdgeColorChange={(value) => onUpdate({ boxEdgeColor: value })}
+        onPos16ShowLineChange={(value) => onUpdate({ pos16ShowLine: value })}
+        onPos16ShowNeighborhoodChange={(value) =>
+          onUpdate({ pos16ShowNeighborhood: value })
+        }
+        onPos16ShowBoundaryChange={(value) =>
+          onUpdate({ pos16ShowBoundary: value })
+        }
       />
       <Legend
         currentMode={state.currentMode}
